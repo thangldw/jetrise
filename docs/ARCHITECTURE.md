@@ -46,7 +46,7 @@ Expensive calculations run in `src/planner-worker.js`, a module Web Worker: sche
 
 ## Saves
 
-Saves live in `localStorage` under keys derived from `SAVE_KEY` in `src/game.js`.
+Saves live in `localStorage` under keys derived from `SAVE_KEY` (`jetrise-career-v1`) in `src/game.js`.
 
 | Key | Purpose |
 | --- | --- |
