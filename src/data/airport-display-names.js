@@ -1,4 +1,4 @@
-// Presentation-only names. Sources, licenses and per-field provenance: handoff/airport-display-names/.
+// Presentation-only names. Sources, licenses and per-field provenance: docs/airport-display-names/.
 export const airportNames = {
   "AAE": {
     "ja": {

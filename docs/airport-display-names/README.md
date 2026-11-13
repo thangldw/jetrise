@@ -7,7 +7,7 @@ This directory contains a sparse, sourced presentation catalog for the existing 
 - `src/data/airport-display-names.js`: `{ "IATA": { "en"?: { "city"?, "name"? }, "ja"?: { "city"?, "name"? } }`.
 - `airport-name-provenance.json`: one source record for every translated field, including GeoNames alternate-name IDs or Wikidata entity IDs when used.
 - `airport-names-metadata.json`: licenses, source downloads/hashes, selection rules and coverage.
-- Missing Japanese fields intentionally use Latin fallback; the full unresolved inventory is retained in the local QA archive.
+- Missing Japanese fields intentionally use Latin fallback.
 - `airport-names-metadata.json` and `validation.json`: measured coverage and validation result.
 
 Use `ja.field ?? en.field ?? canonical.field`, with sparse English overrides restoring the ten manually localized/shortened names and the Latin municipality for HAN/SGN/DAD. CXR and UIH also have reviewed presentation-only city corrections. Vietnamese mode should retain its established labels. Do not use this catalog to translate custom/user-defined airport or airline names. Search should include current localized, English and canonical name/city aliases plus IATA; route/city identity must continue using codes.
@@ -68,5 +68,3 @@ The last Air Seoul page was available through the indexed official-page text but
 `src/airport-display.js` provides language-aware presentation helpers through `useI18n`. Production JSX uses these helpers for picker/search aliases, maps, routes, schedules, alerts and decision previews. Engine-owned message fields are matched as complete canonical labels before presentation; custom airport names and player airline names remain opaque. Neither the canonical airport/network modules nor the engine, planner worker, persisted schema or save keys are changed. Source attribution is visible on founding and in Settings.
 
 The final catalog passed an independent review and 18 focused helper/render tests. The Pages regression suite passed 466 tests, the production build and artifact allowlist passed, and 160 EN/JA screen renders completed with no crashes or state mutation. Detector matches were Latin proper names with diacritics, not untranslated Vietnamese UI copy. Browser checks covered same-mount language switching, Japanese/English/IATA search, no-result recovery, keyboard focus, unchanged player names and selected IATA, network labels, visible attribution, and a 390px viewport without horizontal overflow.
-
-The complete long-run release matrix and private CI gate publication. Local retained evidence is in the sibling `jetrise-airport-localization-qa` directory; only compiled `dist/client` assets may be published to the public Pages repository.
