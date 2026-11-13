@@ -35,31 +35,28 @@ Tests live in `tests/*.test.mjs` and run against the rule modules directly, with
 - Follow the save compatibility rules in [ARCHITECTURE.md](ARCHITECTURE.md#compatibility-rules). A change that makes an existing save fail to load is a bug.
 - Engine messages are written in Vietnamese. When you add or change one, add its English and Japanese entries in `src/locales.js`; the language tests check that the catalogs stay in step.
 
-## Publishing to GitHub Pages
+## Continuous integration and publishing
 
-`main` holds the source. The `gh-pages` branch holds only the built site and is what GitHub Pages serves. Publication is manual.
+`.github/workflows/ci.yml` runs on every pull request and on every push to `main`: it installs dependencies, builds the site, checks the build output and runs the test suite.
 
-Validate first, from an up-to-date `main`:
+`main` holds the source. The `gh-pages` branch holds only the built site and is what GitHub Pages serves. After the checks pass on a push to `main`, the workflow rebuilds the site and commits it on top of `gh-pages`. If the build output is unchanged, nothing is published. Pages picks up the new commit within about a minute.
+
+To publish by hand instead, from an up-to-date `main`:
 
 ```
 npm ci
 npm run build:pages
 npm run verify:pages
 npm test
-```
-
-Then commit `dist/client` on top of the existing `gh-pages` history. Never force-push that branch.
-
-```
 git fetch origin gh-pages
 git worktree add ../jetrise-pages origin/gh-pages
 cd ../jetrise-pages && git rm -rq . && cp -R ../jetrise/dist/client/. . && touch .nojekyll
-git add -A && git commit -m "Publish <feature> from <source sha>"
+git add -A && git commit -m "Publish from <source sha>"
 git push origin HEAD:gh-pages
 cd ../jetrise && git worktree remove ../jetrise-pages
 ```
 
-Pages rebuilds within about a minute. Compare `https://thangldw.github.io/jetrise/` with `dist/client/index.html` to confirm.
+Never force-push `gh-pages`.
 
 ### Rollback
 

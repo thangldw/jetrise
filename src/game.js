@@ -25,7 +25,7 @@ import {proposeSchedule,applyProposal} from './planner.js';
 import {repairCost,createHQ,restoreHQ,dailyHQ,modifiers,hqAction} from './hq.js';
 import {normalizePlane,fleetAction,settleFleet,usedPrice,deliveryDays,flightUnavailable} from './fleet.js';
 
-export const SAVE_KEY='vantis-living-world-v1';
+export const SAVE_KEY='jetrise-career-v1';
 export const TYPES={
  A320:{speed:830,name:'Airbus A320neo',seats:180,range:6300,burn:8.5,nonfuel:10500,price:4800000},
  E190:{speed:800,name:'Embraer E190',seats:100,range:4500,burn:5,nonfuel:6500,price:2400000},

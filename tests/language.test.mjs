@@ -17,7 +17,7 @@ test('language preference wins over browser language and supports regional tags'
 });
 
 test('language storage never reads or writes career, backup or migration keys', () => {
-  const storage = memoryStorage({'vantis-living-world-v1': '{"schema":1,"day":37}', 'career-backup': 'unchanged'});
+  const storage = memoryStorage({'jetrise-career-v1': '{"schema":1,"day":37}', 'career-backup': 'unchanged'});
   const before = new Map(storage.values);
   for (const language of ['en', 'ja', 'vi']) {
     assert.equal(saveLanguage(storage, language), true);
