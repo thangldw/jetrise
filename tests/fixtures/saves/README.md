@@ -1,7 +1,7 @@
 # Frozen compatibility fixture
 
 `pre-jet-schema1.json` is a synthetic reproduction of the original built-in career,
-frozen on 2026-10-23 for JET-208. It is not a user's private or historical export.
+frozen on 2026-10-23. It is not a user's private or historical export.
 It omits economyVersion, setupComplete, the aircraft sequence and weekly-service/
 airborne fields to exercise their established legacy defaults, while retaining
 the original cash, three registrations and thirteen weekly schedules.
