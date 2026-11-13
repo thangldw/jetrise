@@ -1,0 +1,10 @@
+{
+  "source": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/main/airports.csv",
+  "publisher": "OurAirports",
+  "license": "Public domain",
+  "retrieved": "2026-10-19",
+  "source_sha256": "0499dbd88de2fc735ac5c09f59796ccc3af544e17ffda807f793c0c6fe6c3d75",
+  "filter": "scheduled_service=yes, IATA length3, large/medium/small airport",
+  "count": 4008,
+  "notes": "Coordinates and names from source; ten common display names localized. Game demand, fees and performance are synthetic."
+}

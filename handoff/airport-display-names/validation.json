@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "canonicalAirports": 4008,
+  "presentationEntries": 2591,
+  "translatedFields": 3607,
+  "provenanceFields": 3607,
+  "selectedGeoNamesAlternateLabelsVerified": 3485,
+  "errors": [],
+  "catalogSha256": "f22b57c88b03b1c63458d97738810462b334f4d8467963422324e75d087c12d2",
+  "canonicalAirportsJsSha256": "99b2cc1fe21a5989832541cee1c856661c702ee8bd41a3e4ebff3d31f8265ca4"
+}

@@ -1,0 +1,299 @@
+{
+  "schema": 1,
+  "cash": 8600000,
+  "day": 1,
+  "fuel": 120,
+  "average": 710,
+  "co2": 20000000,
+  "co2Average": 0.1,
+  "openedRoutes": [
+    0,
+    1,
+    2
+  ],
+  "fleet": [
+    {
+      "id": "VN-A101",
+      "type": "A320",
+      "wear": 22,
+      "route": 0,
+      "freq": 1,
+      "fare": 145,
+      "cabin": "dense",
+      "hub": "HAN",
+      "livery": 0,
+      "options": [],
+      "hoursSinceService": 0,
+      "fault": null,
+      "maintenance": null,
+      "ageDays": 0,
+      "lease": null
+    },
+    {
+      "id": "VN-A102",
+      "type": "E190",
+      "wear": 15,
+      "route": 1,
+      "freq": 1,
+      "fare": 130,
+      "cabin": "dense",
+      "hub": "HAN",
+      "livery": 0,
+      "options": [],
+      "hoursSinceService": 0,
+      "fault": null,
+      "maintenance": null,
+      "ageDays": 0,
+      "lease": null
+    },
+    {
+      "id": "VN-A104",
+      "type": "A320",
+      "wear": 96,
+      "route": null,
+      "freq": 1,
+      "fare": 145,
+      "cabin": "dense",
+      "hub": "HAN",
+      "livery": 0,
+      "options": [],
+      "hoursSinceService": 0,
+      "fault": null,
+      "maintenance": null,
+      "ageDays": 0,
+      "lease": null
+    }
+  ],
+  "gameplay": {
+    "version": 1,
+    "startDay": 1,
+    "contracts": [],
+    "dismissed": [],
+    "research": [],
+    "claimed": [],
+    "stats": {
+      "days": 0,
+      "operatingDays": 0,
+      "flights": 0,
+      "pax": 0,
+      "profit": 0,
+      "profitableRoutes": [],
+      "hubs": [],
+      "contracts": 0,
+      "recovered": 0
+    },
+    "decisions": []
+  },
+  "network": {
+    "airports": [],
+    "routes": []
+  },
+  "airline": {
+    "name": "VANTIS AIR",
+    "logo": "wing",
+    "color": "#ff5955",
+    "origin": "HAN",
+    "personalized": false
+  },
+  "orders": [],
+  "hq": {
+    "hubs": {
+      "HAN": {
+        "hangar": 0
+      }
+    },
+    "staff": {
+      "pilots": 12,
+      "cabin": 10,
+      "tech": 6,
+      "ground": 6
+    },
+    "training": {
+      "pilots": 0,
+      "cabin": 0,
+      "tech": 0,
+      "ground": 0
+    },
+    "service": 0,
+    "marketingUntil": 0,
+    "loan": null,
+    "prepaidRent": 0,
+    "maintenancePaid": 0,
+    "targets": {},
+    "ledger": []
+  },
+  "tycoon": {
+    "schema": 1,
+    "schedules": [
+      {
+        "id": 1,
+        "plane": "VN-A101",
+        "route": 0,
+        "start": 6
+      },
+      {
+        "id": 2,
+        "plane": "VN-A101",
+        "route": 2,
+        "start": 25
+      },
+      {
+        "id": 3,
+        "plane": "VN-A101",
+        "route": 0,
+        "start": 62
+      },
+      {
+        "id": 4,
+        "plane": "VN-A101",
+        "route": 2,
+        "start": 78
+      },
+      {
+        "id": 5,
+        "plane": "VN-A101",
+        "route": 0,
+        "start": 104
+      },
+      {
+        "id": 6,
+        "plane": "VN-A101",
+        "route": 2,
+        "start": 122
+      },
+      {
+        "id": 7,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 6
+      },
+      {
+        "id": 8,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 30
+      },
+      {
+        "id": 9,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 54
+      },
+      {
+        "id": 10,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 78
+      },
+      {
+        "id": 11,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 102
+      },
+      {
+        "id": 12,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 126
+      },
+      {
+        "id": 13,
+        "plane": "VN-A102",
+        "route": 1,
+        "start": 150
+      }
+    ],
+    "exceptions": [],
+    "cabins": {
+      "VN-A101": [
+        146,
+        14,
+        2
+      ],
+      "VN-A102": [
+        81,
+        8,
+        1
+      ],
+      "VN-A104": [
+        146,
+        14,
+        2
+      ]
+    },
+    "prices": [
+      [
+        145,
+        363,
+        725
+      ],
+      [
+        130,
+        325,
+        650
+      ],
+      [
+        220,
+        550,
+        1100
+      ],
+      [
+        100,
+        250,
+        500
+      ],
+      [
+        190,
+        475,
+        950
+      ],
+      [
+        125,
+        313,
+        625
+      ],
+      [
+        155,
+        388,
+        775
+      ],
+      [
+        255,
+        638,
+        1275
+      ],
+      [
+        100,
+        250,
+        500
+      ],
+      [
+        130,
+        325,
+        650
+      ],
+      [
+        780,
+        1950,
+        3900
+      ],
+      [
+        720,
+        1800,
+        3600
+      ],
+      [
+        550,
+        1375,
+        2750
+      ]
+    ],
+    "audits": {},
+    "priceDays": {},
+    "research": [],
+    "service": false,
+    "history": [],
+    "nextId": 14
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "purpose": "Presentation-only sourced airport/city names; preserve canonical identity and user-defined names",
+  "generatedAt": "2026-11-05T23:02:22.026671+00:00",
+  "catalogFile": "airport-names.json",
+  "catalogSha256": "f22b57c88b03b1c63458d97738810462b334f4d8467963422324e75d087c12d2",
+  "coverage": {
+    "catalogAirports": 4008,
+    "presentationEntries": 2591,
+    "englishNameOverrides": 10,
+    "englishCityOverrides": 5,
+    "japaneseNames": 1588,
+    "japaneseCities": 2004,
+    "japaneseAny": 2591,
+    "japaneseBoth": 1001,
+    "sourceCountries": 233,
+    "canonicalCitiesNonempty": 3941,
+    "JP": {
+      "airports": 83,
+      "japaneseNames": 83,
+      "japaneseCities": 64
+    },
+    "VN": {
+      "airports": 22,
+      "japaneseNames": 22,
+      "japaneseCities": 17
+    },
+    "japaneseNameFallback": 2420,
+    "japaneseCityFallback": 2004,
+    "japaneseNeither": 1417,
+    "identityFilter": {
+      "matchedUniqueAirports": 3903,
+      "ambiguousAirports": 1,
+      "rejectedAirports": 104
+    }
+  },
+  "sources": {
+    "GeoNames": {
+      "homepage": "https://www.geonames.org/",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "documentationUrl": "https://download.geonames.org/export/dump/readme.txt",
+      "attribution": "Airport and city names adapted from GeoNames, licensed under CC BY 4.0."
+    },
+    "OurAirports": {
+      "homepage": "https://ourairports.com/data/",
+      "license": "Public domain",
+      "gameSnapshotDate": "2026-10-19"
+    },
+    "Wikidata": {
+      "homepage": "https://www.wikidata.org/",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "documentationUrl": "https://www.wikidata.org/wiki/Wikidata:Data_access"
+    }
+  },
+  "downloads": [
+    {
+      "file": "alternateNamesV2.zip",
+      "url": "https://download.geonames.org/export/dump/alternateNamesV2.zip",
+      "bytes": 205185128,
+      "sha256": "f639c143e2cd6c0df494b34c429d32fefaebfab4b43b9df6d34bc186d300c09c",
+      "retrieved": "2026-11-05T22:48:47.347924+00:00",
+      "last_modified": "Thu, 05 Nov 2026 02:56:21 GMT",
+      "seconds": 64.15
+    },
+    {
+      "file": "cities500.zip",
+      "url": "https://download.geonames.org/export/dump/cities500.zip",
+      "bytes": 13918180,
+      "sha256": "e3bdf6424014c5f29ad6601df97f8f63120770946370b5ba16ddb2ceeda64436",
+      "retrieved": "2026-11-05T22:47:48.274363+00:00",
+      "last_modified": "Thu, 05 Nov 2026 02:51:18 GMT",
+      "seconds": 5.08
+    },
+    {
+      "file": "ourairports-current.csv",
+      "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/main/airports.csv",
+      "bytes": 12756853,
+      "sha256": "55bd82106c8ac1c9559cf5879ae9b69eb9c6e748df01514632dd5fbbb9e8b474",
+      "retrieved": "2026-11-05T22:47:44.617228+00:00",
+      "last_modified": null,
+      "seconds": 1.42
+    }
+  ],
+  "coordinateDownload": {
+    "file": "allCountries.zip",
+    "url": "https://download.geonames.org/export/dump/allCountries.zip",
+    "bytes": 422526797,
+    "sha256": "95ce0f008eb2607c8f8377b712d7aaa22e578ae69a273a1a4a2b9e409802ea15",
+    "retrieved": "2026-11-05T22:52:07.854064+00:00",
+    "last_modified": "Thu, 05 Nov 2026 02:51:18 GMT",
+    "seconds": 87.91
+  },
+  "supplementDownloads": [
+    {
+      "file": "wikipedia-pageprops.json",
+      "url": "https://en.wikipedia.org/w/api.php?action=query&prop=pageprops&ppprop=wikibase_item&titles=Aguni+Airport%7CC%C3%A0+Mau+Airport%7CCongonhas-S%C3%A3o+Paulo+International+Airport%7CSoekarno-Hatta+International+Airport%7CDien+Bien+Phu+Airport%7CLien+Khuong+Airport%7CFukushima+Airport%7CHanamaki+Airport%7CK%C5%8Dchi+Airport%7CKansai+International+Airport%7CKagoshima+Airport%7CMonbetsu+Airport%7CMinami-Daito+Airport%23Airlines%7CYonaguni+Airport%7CPleiku+Air+Base%7CShimojishima+Airport%7CNanki-Shirahama+Airport%7C%C4%90%C3%B4ng+T%C3%A1c+%28Tuy+Hoa%29+Airport%7CTottori+Airport%7CCon+Dao+Airport&redirects=1&format=json",
+      "sha256": "9f157ebd07e00a24338ea1226a217b715011cf215e9582bbc7db1ef759573245",
+      "bytes": 2831,
+      "retrieved": "2026-11-05T22:57:09Z"
+    },
+    {
+      "file": "wikidata-supplements-expanded.json",
+      "url": "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q1064050%7CQ1151889%7CQ1156310%7CQ1156315%7CQ1156420%7CQ1199773%7CQ1320088%7CQ1366663%7CQ1406198%7CQ1432054%7CQ1432192%7CQ1433078%7CQ165146%7CQ1654720%7CQ177473%7CQ193682%7CQ1993204%7CQ204853%7CQ252768%7CQ3235075%7CQ47724%7CQ504368%7CQ594223%7CQ654922%7CQ6587434%7CQ708517%7CQ7204456%7CQ749497%7CQ844084%7CQ862401%7CQ8719%7CQ900492&languages=ja%7Cen&props=labels%7Cclaims&format=json",
+      "sha256": "c8e197cc1f778b4d09fb79fe2f897633e9a949358e9beec0ef4060151011985c",
+      "bytes": 2509139,
+      "retrieved": "2026-11-05T22:57:12Z"
+    },
+    {
+      "file": "wikidata-major-cities.json",
+      "url": "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q84%7CQ60&languages=ja%7Cen&props=labels%7Cclaims&format=json",
+      "sha256": "3a4d5214c61d1a6d9b899003beb416a517717534af846186c6fa2e1fdd944c3d",
+      "bytes": 620798,
+      "retrieved": "2026-11-05T22:57:43Z"
+    }
+  ],
+  "matching": {
+    "airport": "Exact IATA; airport feature; same country; <=5 km; no conflicting ICAO",
+    "city": "Canonical municipality/current primary or explicit EN name; same country; <=100 km; qualifiers preserved",
+    "japaneseLabels": "No historic/ended/colloquial/future selected alternate labels; no city-only airport aliases; ambiguous labels omitted"
+  },
+  "fallback": "ja.field ?? en.field ?? canonical.field",
+  "warnings": [
+    "Community-maintained labels are source-backed, not all operator-confirmed.",
+    "IATA can identify cities/rail stations and be reassigned; code-only matches were not used.",
+    "P931 place served was not used for municipality.",
+    "Sparse coverage deliberately preserves Latin fallback where Japanese evidence is insufficient."
+  ],
+  "integrationReadme": "README.md"
+}
