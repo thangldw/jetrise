@@ -46,7 +46,7 @@ npm test       # full test suite
 
 ## License and credits
 
-Code is released under the [MIT License](LICENSE).
+Code is released under the [Apache License 2.0](LICENSE).
 
 Airport data comes from [OurAirports](https://ourairports.com/data/) (public domain). Localized airport and city names are adapted from [GeoNames](https://www.geonames.org/) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)) and Wikidata (CC0). The world outline comes from [Natural Earth](https://www.naturalearthdata.com/) (public domain). Icons are [Phosphor Icons](https://phosphoricons.com/) (MIT).
 
