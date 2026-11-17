@@ -15,4 +15,5 @@ export const messages = {
   "Đà Nẵng làm hub với máy bay tiết kiệm nhiên liệu, hợp tuyến ngắn và du lịch.": {en: "Da Nang hub with fuel-efficient aircraft for short and leisure routes.", ja: "ダナンをハブに、短距離・観光路線向けの燃費の良い機材。"},
   "Cổng khu vực": {en: "Regional gateway", ja: "地域ゲートウェイ"},
   "Singapore làm hub, tầm hoạt động rộng ra cả khu vực châu Á.": {en: "Singapore hub with reach across the wider Asian region.", ja: "シンガポールをハブに、アジア全域へ路線を広げられます。"},
+  'Số hiệu dự kiến {first}, {second}. Máy bay theo kịch bản: {models}.': {en: 'Planned registrations: {first}, {second}. Scenario aircraft: {models}.', ja: '登録記号（予定）：{first}、{second}。シナリオの機材：{models}。'},
 };
