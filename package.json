@@ -9,6 +9,7 @@
     "preview": "vite preview --base=/jetrise/",
     "build:pages": "vite build --base=/jetrise/",
     "verify:pages": "node scripts/pages-release.mjs",
+    "pretest": "vite build --base=/jetrise/",
     "test": "node --test tests/*.test.mjs",
     "test:pages": "node --test tests/*.test.mjs",
     "test:long-run": "node scripts/long-run-208.mjs && node scripts/long-run-report.mjs",

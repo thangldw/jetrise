@@ -411,3 +411,10 @@
 .launch-office .launch-treasury small,.launch-office .launch-intro small,.launch-office .management-card>small{font-size:12px}
 .launch-fleet .fleet-actions>.button{font-size:13px;min-height:44px;padding:8px 14px}
 .launch-route .button,.launch-custom .button{min-height:44px}
+
+/* Toast: dismissible, bottom-right so it never covers page content; centred again on phones. */
+.toast{left:auto;right:20px;transform:translate(0,12px);display:flex;align-items:flex-start;gap:12px;font-size:13px}
+.toast.visible{transform:translate(0,0);pointer-events:auto}
+.toast-close{flex:none;border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:0 2px;cursor:pointer;opacity:.75}
+.toast-close:hover,.toast-close:focus-visible{opacity:1}
+@media(max-width:760px){.toast{left:50%;right:auto;transform:translate(-50%,12px)}.toast.visible{transform:translate(-50%,0)}}
