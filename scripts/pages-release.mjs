@@ -10,7 +10,7 @@ export function validatePages(root){
   assert(!entry.isSymbolicLink(),`Symlink forbidden: ${rel}`);
   if(entry.isDirectory()){assert(rel==='assets',`Directory forbidden: ${rel}`);walk(full);continue;}
   assert(entry.isFile(),`Non-file forbidden: ${rel}`);
-  assert(rel==='index.html'||rel==='.nojekyll'||/^assets\/[A-Za-z0-9_.-]+\.(js|css|png|jpg|jpeg|webp|svg|woff2?)$/.test(rel),`File forbidden: ${rel}`);
+  assert(rel==='index.html'||rel==='.nojekyll'||['manifest.webmanifest','sw.js','icon.svg'].includes(rel)||/^assets\/[A-Za-z0-9_.-]+\.(js|css|png|jpg|jpeg|webp|svg|woff2?)$/.test(rel),`File forbidden: ${rel}`);
   if(/\.(js|css)$/.test(rel))assert(!/sourceMappingURL\s*=/.test(fs.readFileSync(full,'utf8')),`Source map reference: ${rel}`);
   files.push(rel);
  }}

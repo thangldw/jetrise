@@ -16,3 +16,10 @@ try {
 } catch {
   // Unsupported or blocked: the in-game backup reminder still applies.
 }
+
+// Offline play: register the service worker in production builds only (the dev server must stay uncached).
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {});
+  });
+}

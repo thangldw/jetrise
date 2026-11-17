@@ -1,0 +1,11 @@
+{
+  "name": "JETRISE — Airline Tycoon",
+  "short_name": "JETRISE",
+  "description": "Single-player airline-management game that runs in the browser.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#091a36",
+  "theme_color": "#091a36",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
