@@ -76,7 +76,7 @@ These are switched on explicitly and are off in a new career. Each activation sh
 | --- | --- |
 | **Competition** | Two local AI rival airlines compete for the same finite demand on your first hub's routes. Passengers choose by fare, departure time, amenities and reliability. Difficulty (easy, normal, hard) is chosen once at activation and sets rival cash, reliability and how quickly rivals react. Includes a 42-day challenge with no cash reward. |
 | **Contracts** | Up to three offers per seven-day cycle on routes you own, with standard or negotiated terms. Contract passengers take Economy seats first; a bonus is paid at 90% completion or a penalty at the deadline. |
-| **Market events** | Announced tourism, fuel and low-season events lasting four days. Paying for research reveals the exact effect in advance. |
+| **Market events** | Announced tourism, fuel and low-season events lasting four days; every seventh week is a storm-season event that cuts demand. Paying for research reveals the exact effect in advance. |
 | **Disruption recovery** | For a forecast cancellation you can swap aircraft, delay, lease a short-term replacement or cancel with passenger compensation, and compare the outcomes first. |
 | **Per-leg ledger** | Accounts for each flight leg separately, with ticket cash recognised at departure. Required by the systems below. |
 | **Connections** | Sells one-stop journeys across your network, including overnight and across the week boundary, with one fare split between both legs. |
