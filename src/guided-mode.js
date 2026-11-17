@@ -6,8 +6,10 @@ export const GUIDED_KEY = 'jetrise.guided';
 const CHANGED = 'jetrise:guided';
 
 // First day on which each Headquarters tab appears while guided mode is on. Unlisted tabs are always visible.
+/** @type {Record<string, number>} */
 export const HQ_UNLOCK_DAY = {services: 4, weekly: 4, decisions: 8, development: 8};
 
+/** @param {{getItem(key: string): string | null}} storage */
 export function guidedEnabled(storage) {
   try {
     return storage.getItem(GUIDED_KEY) !== 'off';
@@ -16,6 +18,7 @@ export function guidedEnabled(storage) {
   }
 }
 
+/** @param {{setItem(key: string, value: string): void}} storage @param {boolean} on */
 export function setGuided(storage, on) {
   try {
     storage.setItem(GUIDED_KEY, on ? 'on' : 'off');
@@ -26,16 +29,19 @@ export function setGuided(storage, on) {
 }
 
 // Keeps the tab the player is currently on, so a deep link never leaves them on a hidden tab.
+/** @param {Array<[string, string]>} tabs @param {{day: number, enabled: boolean, current?: string}} options */
 export function visibleTabs(tabs, {day, enabled, current}) {
   if (!enabled) return tabs;
   return tabs.filter(([key]) => key === current || day >= (HQ_UNLOCK_DAY[key] ?? 1));
 }
 
+/** @param {Array<[string, string]>} tabs @param {number} day */
 export function nextUnlock(tabs, day) {
   const later = tabs.map(([key]) => HQ_UNLOCK_DAY[key] ?? 1).filter(d => d > day);
   return later.length ? Math.min(...later) : null;
 }
 
+/** @param {() => void} callback */
 const subscribe = callback => {
   window.addEventListener(CHANGED, callback);
   window.addEventListener('storage', callback);

@@ -10,6 +10,7 @@
     "build:pages": "vite build --base=/jetrise/",
     "verify:pages": "node scripts/pages-release.mjs",
     "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
     "pretest": "vite build --base=/jetrise/",
     "test": "node --test tests/*.test.mjs",
     "test:pages": "node --test tests/*.test.mjs",
@@ -24,7 +25,9 @@
     "vite": "6.4.5"
   },
   "devDependencies": {
+    "@types/react": "^19.2.2",
     "eslint": "^9.39.1",
-    "globals": "^16.5.0"
+    "globals": "^16.5.0",
+    "typescript": "^5.9.3"
   }
 }
