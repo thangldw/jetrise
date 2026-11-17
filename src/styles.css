@@ -418,3 +418,16 @@
 .toast-close{flex:none;border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:0 2px;cursor:pointer;opacity:.75}
 .toast-close:hover,.toast-close:focus-visible{opacity:1}
 @media(max-width:760px){.toast{left:50%;right:auto;transform:translate(-50%,12px)}.toast.visible{transform:translate(-50%,0)}}
+
+/* Dark theme: follows the system setting unless the page is forced light with data-theme=light. */
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e6edf9;--paper:#13264b;--soft:#0b1730;--line:#2a3f66;--muted:#9fb0cb;--midnight:#1b3768;--sand:#b79a6d;--track:#243a60;--thumb:#52668a;--thumb-hover:#7388ab;--thumb-active:#94a7c6;--green:#4fd1a1;--amber:#ffd27b;color-scheme:dark}
+:root:not([data-theme=light]) .gameplay-hero,:root:not([data-theme=light]) .campaign-number,:root:not([data-theme=light]) .workspace-nav>button[aria-current=page],:root:not([data-theme=light]) .command-banner{color:#fff}
+:root:not([data-theme=light]) .company-flight.flight-warning{background:#3a2a10;border-color:#c58b25}
+:root:not([data-theme=light]) .status-tag.warning{color:#ffc58a;background:#3a2a10}
+:root:not([data-theme=light]) .decision-alert{background:#3a2a10;color:#ffd9a8}
+}
+:root[data-theme=dark]{--ink:#e6edf9;--paper:#13264b;--soft:#0b1730;--line:#2a3f66;--muted:#9fb0cb;--midnight:#1b3768;--sand:#b79a6d;--track:#243a60;--thumb:#52668a;--thumb-hover:#7388ab;--thumb-active:#94a7c6;--green:#4fd1a1;--amber:#ffd27b;color-scheme:dark}
+:root[data-theme=dark] .gameplay-hero,:root[data-theme=dark] .campaign-number,:root[data-theme=dark] .workspace-nav>button[aria-current=page],:root[data-theme=dark] .command-banner{color:#fff}
+:root[data-theme=dark] .company-flight.flight-warning{background:#3a2a10;border-color:#c58b25}
+:root[data-theme=dark] .status-tag.warning{color:#ffc58a;background:#3a2a10}
+:root[data-theme=dark] .decision-alert{background:#3a2a10;color:#ffd9a8}
