@@ -1,5 +1,6 @@
 import {validMigrationId} from './live-leg-economy.js';
 import {SAVE_KEY,createGame,restoreGame,transition} from './game.js';
+import {markExported} from './export-reminder.js';
 export const BACKUP_KEY=SAVE_KEY+':backup',DAMAGED_KEY=SAVE_KEY+':damaged',WRITER_LOCK=SAVE_KEY+':writer';
 export function readSession(storage){
  try{const raw=storage.getItem(SAVE_KEY);if(raw===null)return {game:createGame(),raw,blocked:false};try{return {game:restoreGame(raw),raw,blocked:false};}catch{
@@ -310,7 +311,7 @@ export function manageSave(storage,expected,action){
   let raw=expected;if(action.kind.startsWith('entry-')){if(!managedKey(action.key)||storage.getItem(action.key)!==action.stored)throw Error('Bản dự phòng vừa thay đổi. Tải lại danh sách.');try{raw=readSaveEntry(storage,action.key).raw;}catch(e){if(action.kind!=='entry-raw')throw e;raw=action.stored;}}
   if(raw===null)throw Error('Chưa có tiến độ được lưu.');
   if(action.kind.endsWith('raw'))return {download:{text:raw,name:'jetrise-save-original.json'},message:'Đã yêu cầu tải dữ liệu gốc. Giữ file ở nơi an toàn.'};
-  const bundle=exportSaveFile(storage,raw,action.kind==='export');return {download:{text:bundle.text,name:'jetrise-save-day-'+bundle.summary.day+'.json'},message:'Đã yêu cầu tải gói save · '+bundle.snapshots+' backup chuyển đổi.'+(bundle.missing.length?' Không kèm: '+bundle.missing.join(', ')+'.':'')};
+  const bundle=exportSaveFile(storage,raw,action.kind==='export');markExported(storage,bundle.summary.day);return {download:{text:bundle.text,name:'jetrise-save-day-'+bundle.summary.day+'.json'},message:'Đã yêu cầu tải gói save · '+bundle.snapshots+' backup chuyển đổi.'+(bundle.missing.length?' Không kèm: '+bundle.missing.join(', ')+'.':'')};
  }
  throw Error('Thao tác Save Manager không hợp lệ.');
 }

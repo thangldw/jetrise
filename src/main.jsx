@@ -9,3 +9,10 @@ createRoot(document.getElementById("root")).render(
     <I18nProvider><App /></I18nProvider>
   </React.StrictMode>,
 );
+
+// Ask the browser not to evict the career under storage pressure; failure is harmless.
+try {
+  navigator.storage?.persist?.();
+} catch {
+  // Unsupported or blocked: the in-game backup reminder still applies.
+}

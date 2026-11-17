@@ -28,6 +28,7 @@ import {RouteBuilder} from './RouteBuilder.jsx';
 import {Onboarding,AirlineMark} from './Onboarding.jsx';
 import {GeoNetwork} from './GeoNetwork.jsx';
 import {RouteOffice} from './RouteOffice.jsx';
+import {exportReminderDue} from './export-reminder.js';
 import {ScheduleOffice} from './ScheduleOffice.jsx';
 import {OperationsBrief} from './OperationsBrief.jsx';
 import {CabinDiagram} from './CabinDiagram.jsx';
@@ -124,6 +125,7 @@ export function App(){
  const reloadSession=()=>{const latest=loadSession();expected.current=latest.raw;setGame(latest.game);setRecovery(latest.blocked);setBackup(latest.backup);setAccessError(latest.warning||'');setModal(null);setPlane(latest.game.fleet[0].id);setRoute(latest.game.openedRoutes[0]??0);setLockAttempt(n=>n+1);};
 
  useEffect(()=>{document.title=game.airline.personalized?game.airline.name+' · JETRISE':'JETRISE — Airline Tycoon';},[game.airline.name,game.airline.personalized]);
+ const reminded=useRef(0);useEffect(()=>{if(access!=='ready'||recovery)return;try{if(exportReminderDue(localStorage,game.day,reminded.current)){reminded.current=game.day;setToast('Bạn chưa xuất bản sao lưu gần đây. Mở Quản lý dữ liệu để tải file save về máy.');}}catch{}},[game.day,access,recovery]);
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),6500);return()=>clearTimeout(t);},[toast]);
  const open=(type,extra={})=>{const destination=workspaceDestination(type,extra);if(destination&&game.setupComplete&&(!game.founding||game.founding.stage==='done')){if(destination.plane)setPlane(destination.plane);navigate(destination.page,destination.section);return;}returnTo.current=document.activeElement;setModal({type,...extra});};
  const act=async(action,close=false)=>{if(mutationPending.current)return {game,error:'Đang lưu thay đổi. Chờ hoàn tất trước khi tiếp tục.'};if(!writer.current||access!=='ready'||recovery)return {game,error:'Phiên chưa có quyền ghi. Tải bản mới nhất trước khi tiếp tục.'};
