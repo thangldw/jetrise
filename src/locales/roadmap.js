@@ -16,4 +16,6 @@ export const messages = {
   "Cổng khu vực": {en: "Regional gateway", ja: "地域ゲートウェイ"},
   "Singapore làm hub, tầm hoạt động rộng ra cả khu vực châu Á.": {en: "Singapore hub with reach across the wider Asian region.", ja: "シンガポールをハブに、アジア全域へ路線を広げられます。"},
   'Số hiệu dự kiến {first}, {second}. Máy bay theo kịch bản: {models}.': {en: 'Planned registrations: {first}, {second}. Scenario aircraft: {models}.', ja: '登録記号（予定）：{first}、{second}。シナリオの機材：{models}。'},
+  'Âm lượng': {en: 'Volume', ja: '音量'},
+  'Điều chỉnh mức âm nền và hiệu ứng.': {en: 'Adjust the ambient and effect volume.', ja: '環境音と効果音の音量を調整します。'},
 };

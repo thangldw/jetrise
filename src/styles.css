@@ -468,3 +468,10 @@ h1,h2,h3{letter-spacing:-.018em}
 .scenario-grid button span{font-size:11.5px;color:var(--muted);line-height:1.4}
 .scenario-grid button:hover{border-color:var(--sand)}
 .scenario-grid button[aria-pressed=true]{border-color:var(--cta,#e0a04a);box-shadow:0 0 0 2px #e0a04a55}
+
+/* Day report: a short entrance so settling a day feels like an event. */
+@keyframes report-rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.report-hero{animation:report-rise .45s ease-out both}
+.report-hero>strong{animation:report-rise .6s .12s ease-out both}
+.report-hero>strong.negative{color:#c2410c}
+@media(prefers-reduced-motion:reduce){.report-hero,.report-hero>strong{animation:none}}

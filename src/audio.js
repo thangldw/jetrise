@@ -1,5 +1,5 @@
 class JetriseAudio {
-  constructor(){this.enabled=false;this.volume=.45;this.scene='ops';}
+  constructor(){this.enabled=false;this.volume=.45;this.scene='ops';try{const saved=localStorage.getItem('jetrise.volume');if(saved!==null&&Number.isFinite(Number(saved)))this.volume=Math.max(0,Math.min(1,Number(saved)));}catch{}}
   async toggle(){
     try{
       if(!this.ctx){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)throw new Error('unsupported');this.ctx=new Context();this.master=this.ctx.createGain();this.master.gain.value=0;this.master.connect(this.ctx.destination);[55,82.41,110].forEach((hz,i)=>{const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type='sine';o.frequency.value=hz;g.gain.value=.028/(i+1);o.connect(g);g.connect(this.master);o.start()});}
