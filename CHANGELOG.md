@@ -8,3 +8,5 @@
 - Dark theme that follows the system setting.
 - Installable offline app: web manifest and service worker.
 - `R` opens the run-day briefing.
+- A visible keyboard focus ring on every interactive control.
+- ESLint with a small rule set, run in CI.

@@ -431,3 +431,6 @@
 :root[data-theme=dark] .company-flight.flight-warning{background:#3a2a10;border-color:#c58b25}
 :root[data-theme=dark] .status-tag.warning{color:#ffc58a;background:#3a2a10}
 :root[data-theme=dark] .decision-alert{background:#3a2a10;color:#ffd9a8}
+
+/* Keyboard focus: one visible ring for every interactive control that has no ring of its own. */
+:where(button,a[href],select,input,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid var(--cta,#e0a04a);outline-offset:2px}
