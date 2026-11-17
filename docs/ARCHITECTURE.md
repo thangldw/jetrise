@@ -10,7 +10,7 @@ JETRISE is a static single-page application built with React 19 and Vite. It has
 | `src/*.jsx` | React components: the app shell, the five workspaces and their panels and dialogs |
 | `src/*.js` | Game rules as plain JavaScript modules with no React or DOM dependency |
 | `src/data/` | Airport catalog, localized airport names and the world outline |
-| `src/styles.css` | All styling; one stylesheet with CSS custom properties |
+| `src/styles/*.css` | All styling, split into four ordered files (foundation, workspaces, redesign v2, theme and polish). Import order in `src/main.jsx` is the cascade order, so keep it |
 | `public/assets/` | Static images used by the map and aircraft previews |
 | `tests/` | Node test-runner suites and save fixtures |
 | `scripts/` | Release validation and long-run simulation tools |

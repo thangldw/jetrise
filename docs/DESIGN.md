@@ -40,7 +40,7 @@ Until the first day has been run, Headquarters shows a short checklist derived f
 - **Icons.** Phosphor Icons.
 - **Imagery.** The map backdrop and aircraft renders are pre-rendered illustrations. The map is not navigation-grade; only routes and markers are interactive.
 
-Colours and spacing are CSS custom properties in `src/styles.css`.
+Colours and spacing are CSS custom properties in `src/styles/`.
 
 ## Controls
 

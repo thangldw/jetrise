@@ -1,0 +1,63 @@
+/* Toast: dismissible, bottom-right so it never covers page content; centred again on phones. */
+.toast{left:auto;right:20px;transform:translate(0,12px);display:flex;align-items:flex-start;gap:12px;font-size:13px}
+.toast.visible{transform:translate(0,0);pointer-events:auto}
+.toast-close{flex:none;border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:0 2px;cursor:pointer;opacity:.75}
+.toast-close:hover,.toast-close:focus-visible{opacity:1}
+@media(max-width:760px){.toast{left:50%;right:auto;transform:translate(-50%,12px)}.toast.visible{transform:translate(-50%,0)}}
+
+/* Dark theme: follows the system setting unless the page is forced light with data-theme=light. */
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e6edf9;--paper:#13264b;--soft:#0b1730;--line:#2a3f66;--muted:#9fb0cb;--midnight:#1b3768;--sand:#b79a6d;--track:#243a60;--thumb:#52668a;--thumb-hover:#7388ab;--thumb-active:#94a7c6;--green:#4fd1a1;--amber:#ffd27b;color-scheme:dark}
+:root:not([data-theme=light]) .gameplay-hero,:root:not([data-theme=light]) .campaign-number,:root:not([data-theme=light]) .workspace-nav>button[aria-current=page],:root:not([data-theme=light]) .command-banner{color:#fff}
+:root:not([data-theme=light]) .company-flight.flight-warning{background:#3a2a10;border-color:#c58b25}
+:root:not([data-theme=light]) .status-tag.warning{color:#ffc58a;background:#3a2a10}
+:root:not([data-theme=light]) .decision-alert{background:#3a2a10;color:#ffd9a8}
+}
+:root[data-theme=dark]{--ink:#e6edf9;--paper:#13264b;--soft:#0b1730;--line:#2a3f66;--muted:#9fb0cb;--midnight:#1b3768;--sand:#b79a6d;--track:#243a60;--thumb:#52668a;--thumb-hover:#7388ab;--thumb-active:#94a7c6;--green:#4fd1a1;--amber:#ffd27b;color-scheme:dark}
+:root[data-theme=dark] .gameplay-hero,:root[data-theme=dark] .campaign-number,:root[data-theme=dark] .workspace-nav>button[aria-current=page],:root[data-theme=dark] .command-banner{color:#fff}
+:root[data-theme=dark] .company-flight.flight-warning{background:#3a2a10;border-color:#c58b25}
+:root[data-theme=dark] .status-tag.warning{color:#ffc58a;background:#3a2a10}
+:root[data-theme=dark] .decision-alert{background:#3a2a10;color:#ffd9a8}
+
+/* Keyboard focus: one visible ring for every interactive control that has no ring of its own. */
+:where(button,a[href],select,input,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid var(--cta,#e0a04a);outline-offset:2px}
+
+/* ===== Visual refresh: softer depth, calmer typography, pill tabs. Overrides only; revert by deleting this block. ===== */
+:root{--radius:16px;--shadow-sm:0 1px 2px #0a1a3510,0 4px 14px #0a1a3510;--shadow-md:0 2px 4px #0a1a3512,0 12px 28px #0a1a3518;--ring:#e0a04a;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Variable","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-feature-settings:"tnum" 1,"cv11" 1;line-height:1.45}
+h1,h2,h3{letter-spacing:-.018em}
+.workspace-page-heading h1{font-size:clamp(26px,2.6vw,34px);font-weight:750;line-height:1.15}
+.workspace-page-heading p{color:var(--muted);font-size:14px;margin-top:6px}
+.management-card,.workspace-panel,.fleet-workspace-card,.finance-outlook,.operation-metrics>div,.workspace-metrics>div,.schedule-kpis>div{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.management-card,.workspace-panel,.fleet-workspace-card{transition:box-shadow .18s,border-color .18s}
+.fleet-workspace-card:hover,.workspace-panel:hover{box-shadow:var(--shadow-md)}
+.operation-metrics strong,.workspace-metrics strong,.schedule-kpis strong{font-weight:750;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.operation-metrics small,.workspace-metrics small{text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:600}
+.management-tabs{gap:8px}
+.management-tabs button{border-radius:999px;padding:8px 16px;transition:background .15s,color .15s,border-color .15s,box-shadow .15s}
+.management-tabs button:hover{border-color:var(--sand);color:var(--ink)}
+.management-tabs button[aria-pressed=true]{box-shadow:0 4px 12px #091a3640}
+.game-shell .topbar{background:linear-gradient(180deg,#0d2349,#091a36);border-bottom:1px solid #ffffff12;box-shadow:0 6px 20px #091a3622}
+.workspace-nav>button{border-radius:12px;transition:background .15s,color .15s}
+.run-day{border-radius:12px;font-weight:700;box-shadow:0 6px 18px #e0a04a55;transition:transform .15s,box-shadow .15s,background .15s}
+.run-day:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px #e0a04a66}
+.run-day:active:not(:disabled){transform:none}
+.setup-checklist{background:linear-gradient(160deg,#0f2447,#0a1b38);border-radius:20px;box-shadow:var(--shadow-md)}
+:where(.setup-checklist,.setup-checklist-head) [role=progressbar] > *,.setup-checklist progress{background:linear-gradient(90deg,#e0a04a,#f1c27b)}
+.modal,dialog{border-radius:20px;box-shadow:0 24px 60px #040e2255}
+@media(prefers-reduced-motion:reduce){.management-card,.workspace-panel,.fleet-workspace-card,.run-day,.management-tabs button,.workspace-nav>button{transition:none}.run-day:hover:not(:disabled){transform:none}}
+
+/* Scenario presets on the founding form. */
+.scenario-picker{border:0;margin:0 0 18px;padding:0}
+.scenario-picker legend{font-weight:700;font-size:13px;margin-bottom:8px;padding:0}
+.scenario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.scenario-grid button{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.scenario-grid button span{font-size:11.5px;color:var(--muted);line-height:1.4}
+.scenario-grid button:hover{border-color:var(--sand)}
+.scenario-grid button[aria-pressed=true]{border-color:var(--cta,#e0a04a);box-shadow:0 0 0 2px #e0a04a55}
+
+/* Day report: a short entrance so settling a day feels like an event. */
+@keyframes report-rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.report-hero{animation:report-rise .45s ease-out both}
+.report-hero>strong{animation:report-rise .6s .12s ease-out both}
+.report-hero>strong.negative{color:#c2410c}
+@media(prefers-reduced-motion:reduce){.report-hero,.report-hero>strong{animation:none}}

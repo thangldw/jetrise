@@ -2,7 +2,10 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.jsx";
 import { I18nProvider } from "./i18n.jsx";
-import "./styles.css";
+import "./styles/01-foundation.css";
+import "./styles/02-workspaces.css";
+import "./styles/03-redesign-v2.css";
+import "./styles/04-theme-and-polish.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
