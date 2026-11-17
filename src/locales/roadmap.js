@@ -18,4 +18,9 @@ export const messages = {
   'Số hiệu dự kiến {first}, {second}. Máy bay theo kịch bản: {models}.': {en: 'Planned registrations: {first}, {second}. Scenario aircraft: {models}.', ja: '登録記号（予定）：{first}、{second}。シナリオの機材：{models}。'},
   'Âm lượng': {en: 'Volume', ja: '音量'},
   'Điều chỉnh mức âm nền và hiệu ứng.': {en: 'Adjust the ambient and effect volume.', ja: '環境音と効果音の音量を調整します。'},
+  'Thời tiết sân bay': {en: 'Airport weather', ja: '空港の天気'},
+  'Sương mù giảm 15% và bão giảm 45% nhu cầu của mọi tuyến chạm sân bay đó trong ngày.': {en: 'Fog cuts demand by 15% and storms by 45% on every route touching that airport for the day.', ja: '霧は当日その空港に接する全路線の需要を15%、嵐は45%減らします。'},
+  'Quang đãng': {en: 'Clear', ja: '晴れ'},
+  'Sương mù': {en: 'Fog', ja: '霧'},
+  'Bão': {en: 'Storm', ja: '嵐'},
 };

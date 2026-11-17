@@ -101,7 +101,7 @@ The career is stored in the browser. The Save Manager can export it to a file, p
 
 - Other human players, accounts, cloud saves or any online service.
 - Real traffic, fares or airline economics; there is no external data feed.
-- Automatic weather or airport closures. Disruption scenarios are started by the player.
+- Airport closures. Weather only changes demand (fog, storms); it does not cancel flights. Disruption scenarios are started by the player.
 - Slot auctions, additional rival hubs and rival connecting itineraries.
 
 Balance has been checked for accounting consistency by automated long-run simulations, not tuned through human playtesting.

@@ -63,6 +63,18 @@ export function eventFactor(ctx,day,kind,{forecast=false}={}){
  return marketEvents({...ctx,day}).filter(e=>e.kind===kind&&day>=e.start&&day<=e.end).reduce((n,e)=>n*(forecast&&day>ctx.day&&!ctx.gameplay.research.includes(e.id)?(e.low+e.high)/2:e.factor),1);
 }
 export function marketPrices(ctx,day=ctx.day,forecast=false){return {fuelPrice:[740,790,860,725,700,815][(day-1)%6]*eventFactor(ctx,day,'fuel',{forecast}),co2Price:[.1,.12,.085,.11,.095,.13][(day-1)%6]};}
+// Weather per airport and day. It is derived from a hash of (airport, day), so nothing is stored in the save.
+// Forecasts and settlement share this rule, so a projection always matches the day it predicts; the interface
+// only shows the next WEATHER_OUTLOOK_DAYS days so the player plans around it without a full calendar.
+export const WEATHER_OUTLOOK_DAYS=3;
+export const WEATHER_EFFECT={clear:1,fog:.85,storm:.55};
+const WEATHER_ODDS={storm:.06,fog:.10};
+const hash=text=>{let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)/4294967296;};
+export function weatherKind(airport,day){const roll=hash(airport+':'+day);return roll<WEATHER_ODDS.storm?'storm':roll<WEATHER_ODDS.storm+WEATHER_ODDS.fog?'fog':'clear';}
+export function weatherFactor(ctx,from,to,day){
+ if(!ctx.gameplay)return 1;
+ return WEATHER_EFFECT[weatherKind(from,day)]*WEATHER_EFFECT[weatherKind(to,day)];
+}
 export function demandEventFactor(ctx,day){return eventFactor(ctx,day,'tourism',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'low',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'storm',{forecast:!!ctx.projecting});}
 export function campaignStatus(s){const g=s.gameplay;if(!g)return [];return CAMPAIGN.map((c,i)=>{let value=c.metric==='flights'?(g.stats.pax>0?1:0):c.metric==='profitableRoutes'?g.stats.profitableRoutes.length:c.metric==='hubs'?g.stats.hubs.filter(h=>s.hq.hubs[h]).length:g.stats[c.metric];const eligible=value>=c.target&&(c.id!=='resilience'||g.stats.profit>0);return {...c,value,claimed:g.claimed.includes(c.id),locked:i>g.claimed.length,ready:i===g.claimed.length&&eligible};});}
 export function settleGameplay(s,report,ctx){const g=s.gameplay;g.contracts=report.contractState;g.stats.days++;if(report.flights)g.stats.operatingDays++;g.stats.flights+=report.flights;g.stats.pax+=report.pax;g.stats.profit+=report.profit;g.stats.contracts+=report.contractResults.filter(c=>c.status==='won').length;const profits={};for(const r of report.rows){profits[r.route]=(profits[r.route]||0)+r.profit;if(r.pax&&!g.stats.hubs.includes(ctx.routes[r.route].from))g.stats.hubs.push(ctx.routes[r.route].from);if(r.recovery&&!report.legAccounting)g.stats.recovered++;}for(const [route,profit] of Object.entries(profits))if(profit>0&&!g.stats.profitableRoutes.includes(Number(route)))g.stats.profitableRoutes.push(Number(route));

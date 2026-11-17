@@ -61,3 +61,12 @@ h1,h2,h3{letter-spacing:-.018em}
 .report-hero>strong{animation:report-rise .6s .12s ease-out both}
 .report-hero>strong.negative{color:#c2410c}
 @media(prefers-reduced-motion:reduce){.report-hero,.report-hero>strong{animation:none}}
+
+/* Airport weather outlook (market tab). */
+.weather-outlook table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.weather-outlook th,.weather-outlook td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.weather-outlook .weather-fog{color:#a16207;font-weight:600}
+.weather-outlook .weather-storm{color:#b91c1c;font-weight:700}
+:root[data-theme=dark] .weather-outlook .weather-fog{color:#fcd34d}
+:root[data-theme=dark] .weather-outlook .weather-storm{color:#fca5a5}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .weather-outlook .weather-fog{color:#fcd34d}:root:not([data-theme=light]) .weather-outlook .weather-storm{color:#fca5a5}}

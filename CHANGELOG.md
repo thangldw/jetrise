@@ -17,4 +17,5 @@
 - `styles.css` split into four ordered files; the built stylesheet is byte-identical.
 - `npm run typecheck`: TypeScript over a growing list of JSDoc-typed modules, run in CI.
 - `docs/ROADMAP.md` scopes weather per airport, slot auctions and more rival hubs.
+- Weather per airport: deterministic fog (-15% demand) and storms (-45%) for routes touching an affected airport, with a three-day outlook in Strategy › Market. No save change; forecasts and settlement share the rule.
 - ESLint with a small rule set, run in CI.

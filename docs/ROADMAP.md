@@ -10,11 +10,9 @@ These three features change game rules, so each needs its own design, a save-for
 - Settlement must stay deterministic. Pseudo-randomness has to be derived from the day and stable ids, never `Math.random`.
 - Each feature needs unit tests plus a `test:long-run` comparison against the current baseline.
 
-## 1. Weather per airport
+## 1. Weather per airport (demand effect shipped)
 
-- Derive a weather state per airport and day from a hash of `(day, airport)`, so no new state is stored.
-- Effects: delay or cancellation risk on legs touching the airport, wired into the existing disruption-recovery flow.
-- Open questions: how severe, whether research can reveal it in advance (as for market events), and whether it replaces or adds to the network-wide storm-season event.
+Fog and storms now scale route demand deterministically from a hash of airport and day (`weatherKind` in `src/gameplay.js`), with a three-day outlook in Strategy › Market. Still open: delays or cancellations driven by weather through the disruption-recovery flow, and research that reveals weather further ahead.
 
 ## 2. Slot auctions
 
