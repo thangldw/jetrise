@@ -1,6 +1,7 @@
 import React from "react";
 import {useI18n} from "./i18n.jsx";
-import {weatherKind, WEATHER_EFFECT, WEATHER_OUTLOOK_DAYS} from "./gameplay.js";
+import {weatherKind, WEATHER_EFFECT} from "./gameplay.js";
+import {weatherOutlookDays} from "./research.js";
 
 const LABEL = {clear: "Quang đãng", fog: "Sương mù", storm: "Bão"};
 
@@ -20,7 +21,7 @@ export const servedAirports = (game, routes) => {
 export function WeatherOutlook({game, routes}) {
   const {t: tx} = useI18n();
   const airports = servedAirports(game, routes);
-  const days = Array.from({length: WEATHER_OUTLOOK_DAYS}, (_, i) => game.day + i);
+  const days = Array.from({length: weatherOutlookDays(game)}, (_, i) => game.day + i);
   return (
     <section className="management-card weather-outlook" aria-labelledby="weather-title">
       <h3 id="weather-title">{tx("Thời tiết sân bay")}</h3>
