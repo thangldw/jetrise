@@ -1,7 +1,7 @@
 import {chooseWeeklyGoal} from './weekly-review.js';
 import {advanceAction,guardAdvanceSales,validateAdvanceSales} from './advance-sales.js';
 import {applyDecisionComparison} from './decision-comparison.js';
-import {enableRivalNetwork,validateRivalNetwork} from './rival-network.js';
+import {enableRivalNetwork,enableRivalHubs,validateRivalNetwork} from './rival-network.js';
 import {customerAction,validateCustomers} from './customer-strategy.js';
 import {sharedSlotAction,validateSlotMarket,reconcileConditionalSlots} from './slot-market.js';
 import {auctionAction,auctionDue,closeAuctions,validateSlotAuction} from './slot-auction.js';
@@ -130,6 +130,7 @@ export function transition(current,action){
   if(action.type==='weekly-goal'){if(action.basis!==JSON.stringify(current))throw Error('Snapshot đã thay đổi. Kiểm tra lại mục tiêu trước khi lưu.');message=chooseWeeklyGoal(s,action);
   }else if(managed){message=managed;if(['fleet-reserve','fleet-program'].includes(action.type))logDecision(s,message);}else if(action.type==='disruption-apply'){message=applyDisruption(s,c,action.preview);logDecision(s,message);}else if(action.type==='overnight-enable'){message=enableOvernight(s,action);}else if(action.type==='journey-refund'){message=cancelJourney(s,action.id);}else if(action.type==='leg-economy-enable'){
    enableLegEconomy(s,action.migrationId);message='Đã bật kinh tế theo chặng. Vé và chi phí được giữ theo từng chuyến thực tế.';
+  }else if(action.type==='rival-hubs-enable'){message=enableRivalHubs(s,action);
   }else if(action.type==='rival-network-enable'){message=enableRivalNetwork(s,action,c);
   }else if(action.type==='rival-growth'){
    if(!s.strategy||s.strategy.growth||s.strategy.expansion)throw Error('Bật cạnh tranh AI trước; tăng trưởng chỉ bật một lần.');s.strategy.growth=true;message='Đối thủ AI có thể thuê tối đa 2 máy bay bổ sung, trả cọc và tiền thuê từ vốn riêng.';logDecision(s,message);
