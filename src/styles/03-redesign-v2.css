@@ -1,0 +1,165 @@
+/* Redesign v2 (2026-11-04): one top bar owns brand, navigation, treasury and the run-day action.
+   Primary actions use the product amber (--cta); the airline colour (--coral) stays an identity accent. */
+:root{--cta:#e0a04a;--cta-hover:#cf8d33;--cta-ink:#1a1205;--panel:#0f2140;--panel-line:#24395c;--nav-ink:#b7c3d6}
+.button.primary{background:var(--cta);border-color:var(--cta);color:var(--cta-ink);font-weight:700}
+.button.primary:hover:not(:disabled){background:var(--cta-hover);border-color:var(--cta-hover)}
+.button.primary:focus-visible{outline-color:var(--blue)}
+.game-shell{display:block;min-height:100dvh;background:var(--soft)}
+.game-shell .topbar{position:sticky;top:0;z-index:20;height:auto;min-height:68px;padding:10px clamp(14px,2.4vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px}
+.game-shell .brand{flex:0 1 auto;max-width:none}
+.game-shell .brand>span{font-size:17px;font-weight:800}
+.game-shell .brand svg{width:28px;height:28px}
+.game-shell .workspace-nav{display:flex;flex-direction:row;flex-wrap:wrap;gap:2px;flex:0 1 auto;min-width:0}
+.game-shell .resource>svg,.game-shell .resource-divider{display:none}
+.game-shell .resource{gap:12px;padding:0 14px}
+.game-shell .workspace-nav>button{width:auto;min-height:44px;padding:0 12px;gap:8px;border:0;border-radius:10px;background:transparent;color:var(--nav-ink);font-size:14px;font-weight:600;flex-direction:row;box-shadow:none}
+@media(hover:hover){.game-shell .workspace-nav>button:hover{background:#ffffff12;color:#fff}}
+.game-shell .workspace-nav>button[aria-current=page]{background:#1c2e4d;color:#fff;box-shadow:none}
+.game-shell .workspace-nav>button[aria-current=page]>svg{color:var(--cta)}
+.game-shell .top-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.game-shell .top-right .top-icon{display:grid;place-items:center;width:44px;height:44px}
+.game-shell .run-day{min-height:44px;white-space:nowrap;padding:0 16px}
+.game-shell .top-save.save-state{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.game-shell .top-save.save-warning{flex-basis:100%;margin:0;padding:6px 10px;border-radius:8px;background:#5c1f14;color:#ffe2d9;font-size:12px}
+.game-shell .workspace-main{max-width:1360px;padding:28px clamp(16px,3vw,40px) 64px}
+.game-shell .workspace-page-heading{margin-bottom:20px}
+.game-shell .workspace-page-heading h1{font-size:clamp(22px,2.2vw,28px);letter-spacing:-.4px;margin:0 0 4px}
+@media(max-width:1240px){.game-shell .workspace-nav{order:3;flex-basis:100%}}
+@media(max-width:760px){
+.game-shell .topbar{min-height:60px;padding:8px 12px;gap:8px}
+.game-shell .brand>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.game-shell .resource{padding:0 4px;gap:2px}
+.game-shell .workspace-nav{position:fixed;inset:auto 0 0;z-index:30;flex-wrap:nowrap;gap:0;background:var(--paper);border-top:1px solid var(--line);box-shadow:0 -4px 20px #091a3610;padding:0 4px env(safe-area-inset-bottom)}
+.game-shell .workspace-nav>button{flex:1;min-height:64px;padding:6px 2px;flex-direction:column;gap:4px;border-radius:0;font-size:10px;color:var(--muted);text-align:center;justify-content:center}
+.game-shell .workspace-nav>button[aria-current=page]{background:var(--soft);color:var(--ink);box-shadow:inset 0 3px var(--cta)}
+.game-shell .workspace-nav>button[aria-current=page]>svg{color:var(--ink)}
+.game-shell .top-right{gap:4px}
+.game-shell .top-right .top-icon{width:40px;height:44px}
+.game-shell .run-day{padding:0 12px;font-size:13px}
+.game-shell .run-day-number{display:none}
+.game-shell .workspace-main{padding:20px 14px 96px}
+}
+/* Founding v2: header + live preview + compact form. */
+.onboarding{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;min-height:100dvh;background:var(--midnight)}
+.onboarding-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 28px;padding:16px clamp(16px,3vw,40px);border-bottom:1px solid #1c2e4d;color:#fff}
+.onboarding-top .onboarding-kicker{font-weight:800;letter-spacing:.14em;font-size:15px;color:#fff;margin:0}
+.onboarding-top .button{background:transparent;color:#fff;border-color:var(--panel-line);min-height:44px}
+.founding-roadmap{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 18px;color:var(--nav-ink);font-size:13px;flex:1 1 auto}
+.founding-roadmap li{display:flex;align-items:center;gap:8px}
+.founding-roadmap b{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid #3a5277;font-size:12px}
+.founding-roadmap [aria-current=step]{color:#fff;font-weight:600}
+.founding-roadmap [aria-current=step] b{background:var(--cta);border-color:var(--cta);color:var(--cta-ink)}
+.onboarding-body{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start;max-width:1320px;width:100%;margin:0 auto;padding:32px clamp(16px,3vw,40px) 48px}
+.onboarding-preview{flex:1 1 520px;min-width:0;position:sticky;top:24px;color:#fff;background:var(--panel);border:1px solid #1c2e4d;border-radius:20px;padding:24px;display:grid;gap:16px}
+.onboarding-preview .brand-preview{margin:0}
+.onboarding-base{font-size:14px;color:var(--nav-ink)}.onboarding-base b{color:#fff}
+.onboarding-grants{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.onboarding-grants>div{background:#0a1a33;border-radius:12px;padding:12px 14px}
+.onboarding-grants dt{font-size:12px;color:var(--nav-ink)}.onboarding-grants dd{margin:4px 0 0;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.onboarding-preview .micro{color:var(--nav-ink)}
+.onboarding-form{flex:1 1 420px;max-width:560px;display:grid;gap:18px;padding:28px}
+.onboarding-form h1{font-size:26px;letter-spacing:-.4px}
+.onboarding-lead{color:var(--muted);font-size:14px;margin-top:-10px}
+.onboarding-form fieldset{display:grid;gap:10px;margin:0}
+.onboarding-form fieldset>.button.shuffle{justify-self:start;margin:0;min-height:44px}
+.onboarding-submit{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.onboarding-submit .button.primary{min-height:52px;font-size:16px;white-space:normal;overflow-wrap:anywhere}
+/* Below ~1040px the two columns wrap into one; a sticky preview would then overlap the form. */
+@media(max-width:1060px){.onboarding-preview{position:static}}
+@media(max-width:760px){
+.onboarding-body{padding:16px 14px 0;gap:16px}
+.onboarding-preview{position:static;padding:16px}
+.onboarding-grants{grid-template-columns:minmax(0,1fr)}
+.onboarding-form{padding:20px 16px 0;border-radius:16px 16px 0 0}
+.onboarding-submit{position:sticky;bottom:0;background:var(--paper);padding:12px 0 calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+}
+/* HQ v2: first-run checklist replaces the banner until the first settled day. */
+.setup-checklist{background:var(--panel);color:#fff;border-radius:20px;padding:24px 28px;margin-bottom:22px}
+.setup-checklist-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.setup-checklist-head h2{font-size:20px}.setup-checklist-head span{font-size:13px;color:var(--nav-ink)}
+.setup-checklist progress{appearance:none;width:100%;height:6px;margin:12px 0 8px;border:0;border-radius:3px;background:#1c2e4d;overflow:hidden}
+.setup-checklist progress::-webkit-progress-bar{background:#1c2e4d}.setup-checklist progress::-webkit-progress-value{background:var(--cta)}.setup-checklist progress::-moz-progress-bar{background:var(--cta)}
+.setup-checklist ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.setup-checklist li{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;min-height:48px;padding:6px 0}
+.setup-checklist li>div{flex:1 1 220px;display:grid;gap:2px}.setup-checklist li small{font-size:13px;color:var(--nav-ink)}
+.setup-checklist li.done{color:var(--nav-ink)}.setup-checklist li.done b{font-weight:500;text-decoration:line-through}
+.setup-checklist li.current{background:#172a47;border-radius:14px;padding:12px 14px;margin:4px -14px}
+.setup-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid #3a5277;flex-shrink:0}
+.setup-checklist li.done .setup-mark{border:0;color:#3fbf86}.setup-checklist li.current .setup-mark{border-color:var(--cta)}
+.setup-checklist li .button.primary{min-height:44px}
+.game-shell .command-banner{border-left:0;background:var(--panel)}
+.founding-roadmap [aria-current=step]{background:none;padding:0}
+@media(max-width:760px){.setup-checklist{padding:20px 16px}.setup-checklist li.current{margin:4px -8px;padding:12px 8px}.setup-checklist li .button.primary{width:100%}
+.onboarding-grants{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.onboarding-grants>div{padding:10px}.onboarding-grants dd{font-size:14px}}
+/* Founding steps 2–3 v2: same dark header as step 1, light working surface, sticky footer actions. */
+.launch-office{padding:0;background:var(--soft)}
+.launch-top{background:var(--midnight)}
+.launch-top .brand{color:#fff;gap:10px}.launch-top .brand>span{font-size:17px;font-weight:800;max-width:220px}
+.launch-treasury{display:grid;justify-items:end;gap:2px}.launch-treasury small{font-size:11px;color:var(--nav-ink)}.launch-treasury strong{font-variant-numeric:tabular-nums}
+.founding-roadmap li.done{color:#fff}.founding-roadmap li.done b{background:var(--green);border-color:var(--green);color:#fff}
+.launch-body{max-width:1240px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}
+.launch-actions{position:sticky;bottom:0;z-index:2;background:var(--soft);padding:16px 0 calc(16px + env(safe-area-inset-bottom));margin-top:24px}
+.launch-actions .button.primary{min-height:48px}
+/* Founding steps 2-3: keep the toast above the sticky action bar, and lift muted text to 4.5:1 on --soft. */
+.launch-office~.toast{bottom:96px}
+@media(max-width:760px){.launch-office~.toast{bottom:156px}}
+.launch-body{--muted:#5f6c83}
+@media(max-width:760px){.launch-top .brand>span{max-width:150px}.launch-treasury{order:2}.launch-body{padding:0 14px}}
+/* Network v2: map-first, panel scrolls on its own beside it. */
+.game-shell .network-workspace{grid-template-columns:minmax(0,1.6fr) minmax(340px,1fr)}
+.game-shell .network-workspace>.world{top:84px;height:calc(100dvh - 112px);min-height:520px;max-height:820px}
+.game-shell .network-context{max-height:calc(100dvh - 112px);overflow-y:auto;position:sticky;top:84px}
+.game-shell .geo-title h2{display:none}
+@media(max-width:1100px){.game-shell .network-workspace{grid-template-columns:minmax(0,1fr)}.game-shell .network-workspace>.world{position:relative;top:auto;height:460px;min-height:0}.game-shell .network-context{position:static;max-height:none;overflow:visible}}
+@media(max-width:760px){.game-shell .network-workspace>.world{height:400px}}
+/* JET-209 advance sales summary. */
+.advance-sales-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0}
+.advance-sales-summary>div{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.advance-sales-summary dt{font-size:12px;color:var(--muted)}.advance-sales-summary dd{margin:4px 0 0;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.advance-sales-card table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+.advance-sales-card th,.advance-sales-card td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.advance-sales-card .button{margin:4px 8px 4px 0}
+
+/* Confirmation checkboxes inside .field must not inherit the text-input sizing (width:100%, min-height, padding). */
+.field input[type="checkbox"]{width:auto;min-height:0;padding:0;margin:0 8px 0 0;vertical-align:-2px;accent-color:var(--ink);flex:none}
+
+/* Locale controls remain available through founding, recovery and the game. */
+.language-select{display:inline-flex;align-items:center;gap:4px;flex-shrink:0;color:var(--nav-ink,#dce6ee);background:var(--panel,#102447);border:1px solid var(--panel-line,#3a5277);border-radius:8px;padding-left:9px;min-height:44px}
+.language-select select{min-height:42px;min-width:58px;padding:6px 8px 6px 2px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+.language-select select option{background:var(--paper);color:var(--ink)}
+.onboarding-top>.language-select{order:2}.onboarding-top>.button{order:3}
+@media(max-width:760px){.founding-roadmap{order:4;flex-basis:100%}.onboarding-top{gap:10px 14px}.game-shell .topbar{column-gap:6px}.game-shell .top-right{flex-wrap:wrap;margin-left:auto}.game-shell .language-select{padding-left:6px}.game-shell .language-select>svg{display:none}.game-shell .language-select select{min-width:51px}.button{white-space:normal}}
+@media(max-width:520px){.game-shell .topbar .brand{align-self:flex-start;padding-top:8px}.game-shell .top-right{display:grid;grid-template-columns:auto minmax(0,1fr) repeat(3,40px);flex:1;min-width:0;margin-left:0;gap:4px}.game-shell .run-day{grid-column:1/-1;min-height:44px}.game-shell .resource{min-width:0}}
+/* AirportPicker is one ARIA combobox: input + popup listbox (replaces the search field + native select pair). */
+.airport-combobox{position:relative}
+.airport-options{position:absolute;z-index:20;top:100%;left:0;right:0;margin:4px 0 0;padding:4px;list-style:none;max-height:min(320px,50vh);overflow-y:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 28px #091a3626}
+.airport-options[hidden]{display:none}
+.airport-options.up{top:auto;bottom:100%;margin:0 0 4px}
+.airport-options li{display:flex;align-items:center;min-height:44px;padding:8px 12px;border-radius:7px;font-size:14px;line-height:1.4;cursor:pointer;overflow-wrap:anywhere}
+.airport-options li.empty{color:var(--muted)}
+.airport-options li.active{background:var(--soft);box-shadow:inset 3px 0 var(--coral)}
+.airport-options li[aria-selected=true]{font-weight:700}
+.airport-options li[aria-selected=true]::after{content:"✓";margin-left:auto;padding-left:10px}
+
+/* Founding clarity: IATA route titles, best-profit highlight, class legend and class-colored sliders. */
+.class-dot{display:inline-block;flex:none;width:10px;height:10px;margin-right:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 1px #09183633;vertical-align:baseline}
+.class-dot[data-class="1"]{background:var(--sand)}.class-dot[data-class="2"]{background:#ff5955}
+.range-control .class-dot{background:var(--range-accent,var(--blue))}
+.class-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 14px;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.class-legend li{display:flex;align-items:center}
+.launch-cabin-summary span::before{content:"";width:8px;height:8px;margin-right:2px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 1px #09183633;align-self:center}
+.launch-cabin-summary span[data-class="1"]::before{background:var(--sand)}.launch-cabin-summary span[data-class="2"]::before{background:#ff5955}
+.launch-route h3{display:grid;gap:6px}
+.launch-route .route-codes{color:var(--ink);font-size:28px;font-weight:800;letter-spacing:.02em;line-height:1.2}
+.launch-route .route-names{font-size:12px;font-weight:400;line-height:1.6;color:var(--muted)}
+.launch-route .route-best{display:grid;gap:2px;margin:4px 0 0}
+.launch-route .route-best strong{font-size:26px;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--green)}
+.launch-route .route-best span{font-size:12px;color:var(--muted)}
+/* Step 1 below the two-column breakpoint: drop the decorative aircraft so the form is not pushed off screen. */
+@media(max-width:1060px){.onboarding-preview .aircraft-paint-preview{display:none}}
+/* Founding screens: 12px type floor and 44px targets. Scoped so in-game density is unchanged. */
+.onboarding-preview .micro,.onboarding-form .micro,.launch-office .micro{font-size:12px;line-height:1.5}
+.launch-office .launch-treasury small,.launch-office .launch-intro small,.launch-office .management-card>small{font-size:12px}
+.launch-fleet .fleet-actions>.button{font-size:13px;min-height:44px;padding:8px 14px}
+.launch-route .button,.launch-custom .button{min-height:44px}
+

@@ -56,14 +56,26 @@ export function marketEvents(ctx){
  if(!ctx.gameplay)return [];
  const start=ctx.gameplay.startDay,week=Math.max(0,Math.floor((ctx.day-start)/7)),events=[];
  for(let w=Math.max(0,week-1);w<=week+1;w++){
-  const kind=w%3,anchor=start+w*7;events.push({id:`event-${w}`,kind:['tourism','fuel','low'][kind],title:['Tuần lễ du lịch','Biến động nhiên liệu','Mùa thấp điểm'][kind],start:anchor+3,end:anchor+6,low:[1.15,1.12,.65][kind],high:[1.45,1.32,.85][kind],factor:[1.2+(w%4)*.05,1.16+(w%4)*.04,.68+(w%4)*.04][kind]});
+  const kind=w%7===6?3:w%3,anchor=start+w*7;events.push({id:`event-${w}`,kind:['tourism','fuel','low','storm'][kind],title:['Tuần lễ du lịch','Biến động nhiên liệu','Mùa thấp điểm','Bão mùa làm gián đoạn khai thác'][kind],start:anchor+3,end:anchor+6,low:[1.15,1.12,.65,.5][kind],high:[1.45,1.32,.85,.75][kind],factor:[1.2+(w%4)*.05,1.16+(w%4)*.04,.68+(w%4)*.04,.55+(w%4)*.05][kind]});
  }return events;
 }
 export function eventFactor(ctx,day,kind,{forecast=false}={}){
  return marketEvents({...ctx,day}).filter(e=>e.kind===kind&&day>=e.start&&day<=e.end).reduce((n,e)=>n*(forecast&&day>ctx.day&&!ctx.gameplay.research.includes(e.id)?(e.low+e.high)/2:e.factor),1);
 }
 export function marketPrices(ctx,day=ctx.day,forecast=false){return {fuelPrice:[740,790,860,725,700,815][(day-1)%6]*eventFactor(ctx,day,'fuel',{forecast}),co2Price:[.1,.12,.085,.11,.095,.13][(day-1)%6]};}
-export function demandEventFactor(ctx,day){return eventFactor(ctx,day,'tourism',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'low',{forecast:!!ctx.projecting});}
+// Weather per airport and day. It is derived from a hash of (airport, day), so nothing is stored in the save.
+// Forecasts and settlement share this rule, so a projection always matches the day it predicts; the interface
+// only shows the next WEATHER_OUTLOOK_DAYS days so the player plans around it without a full calendar.
+export const WEATHER_OUTLOOK_DAYS=3;
+export const WEATHER_EFFECT={clear:1,fog:.85,storm:.55};
+const WEATHER_ODDS={storm:.06,fog:.10};
+const hash=text=>{let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0)/4294967296;};
+export function weatherKind(airport,day){const roll=hash(airport+':'+day);return roll<WEATHER_ODDS.storm?'storm':roll<WEATHER_ODDS.storm+WEATHER_ODDS.fog?'fog':'clear';}
+export function weatherFactor(ctx,from,to,day){
+ if(!ctx.gameplay)return 1;
+ return WEATHER_EFFECT[weatherKind(from,day)]*WEATHER_EFFECT[weatherKind(to,day)];
+}
+export function demandEventFactor(ctx,day){return eventFactor(ctx,day,'tourism',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'low',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'storm',{forecast:!!ctx.projecting});}
 export function campaignStatus(s){const g=s.gameplay;if(!g)return [];return CAMPAIGN.map((c,i)=>{let value=c.metric==='flights'?(g.stats.pax>0?1:0):c.metric==='profitableRoutes'?g.stats.profitableRoutes.length:c.metric==='hubs'?g.stats.hubs.filter(h=>s.hq.hubs[h]).length:g.stats[c.metric];const eligible=value>=c.target&&(c.id!=='resilience'||g.stats.profit>0);return {...c,value,claimed:g.claimed.includes(c.id),locked:i>g.claimed.length,ready:i===g.claimed.length&&eligible};});}
 export function settleGameplay(s,report,ctx){const g=s.gameplay;g.contracts=report.contractState;g.stats.days++;if(report.flights)g.stats.operatingDays++;g.stats.flights+=report.flights;g.stats.pax+=report.pax;g.stats.profit+=report.profit;g.stats.contracts+=report.contractResults.filter(c=>c.status==='won').length;const profits={};for(const r of report.rows){profits[r.route]=(profits[r.route]||0)+r.profit;if(r.pax&&!g.stats.hubs.includes(ctx.routes[r.route].from))g.stats.hubs.push(ctx.routes[r.route].from);if(r.recovery&&!report.legAccounting)g.stats.recovered++;}for(const [route,profit] of Object.entries(profits))if(profit>0&&!g.stats.profitableRoutes.includes(Number(route)))g.stats.profitableRoutes.push(Number(route));
  report.aircraft=Object.fromEntries(s.fleet.map(p=>{const rows=report.rows.filter(r=>r.plane===p.id);return [p.id,{revenue:rows.reduce((n,r)=>n+r.revenue,0),profit:rows.reduce((n,r)=>n+r.profit,0),pax:rows.reduce((n,r)=>n+r.pax,0)}];}));
