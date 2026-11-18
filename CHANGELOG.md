@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- Weather per airport is complete: legs hit by fog or storms are flagged in Disruption recovery with a suggested delay, and a forecasting research branch extends the weather outlook to 4, 5 and 7 days.
+- Slot auctions (opt-in): sealed bids with escrow against the two rivals, closing every seven days before the day runs, with refunds for lost bids. Existing rights are unchanged.
+- Second rival hub (opt-in): after 14 days each rival may open one extra hub from its own cash and route from it.
+- Both new systems take a backup when enabled and can be rolled back from the Save Manager. Careers that do not enable them are unchanged.
+
 ## 0.1.0
 
 - `npm test` now builds the site first, so the content-security-policy test no longer needs a manual build.
