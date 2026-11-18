@@ -61,3 +61,9 @@ Never force-push `gh-pages`.
 ### Rollback
 
 Revert the publication commit on `gh-pages` and push. Rolling back the site does not roll back a player's save; a career can only be restored through the Save Manager.
+
+## Lint and tests
+
+`npm run lint` runs ESLint with a small rule set (undefined names and obvious mistakes). `npm test` builds the site first because the content-security-policy test reads `dist/client/index.html`.
+
+`npm run typecheck` runs TypeScript over a growing list of JavaScript modules (see `include` in `tsconfig.json`) using JSDoc types. To migrate a module, add JSDoc types, add it to `include` and make the command pass; no file renames are needed.

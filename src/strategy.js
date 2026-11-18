@@ -6,7 +6,7 @@ import {allocateRivalSlots,sharedSlotDaily} from './slot-market.js';
 import {positioningPreferences,segmentMix} from './positioning.js';
 import {operatingBase} from './fleet-policy.js';
 // Optional local competition model. No external players or real-world traffic data.
-import {demandEventFactor} from './gameplay.js';
+import {demandEventFactor,weatherFactor} from './gameplay.js';
 import {optionEffects,cabinQuality} from './fleet.js';
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 export const marketId=r=>[r.from,r.to].sort().join('|');
@@ -48,7 +48,7 @@ export function validateStrategy(s,routes){
 export function potentialDemand(ctx,ri,day){
  const r=typeof ri==='object'?canonicalRivalRoute(ctx,ri):ctx.routes.find(r=>marketId(r)===marketId(ctx.routes[ri])),base=r.classDemand||[r.demand,Math.floor(r.demand*.18),Math.floor(r.demand*.035)];
  const season=(r.weekPattern||[1,.95,1.08,1.02,1.12,1.15,.97])[(day-1)%7];
- return base.map(n=>Math.max(0,Math.floor(n*season*demandEventFactor(ctx,day)*(ctx.modifiers?.demand||1))));
+ return base.map(n=>Math.max(0,Math.floor(n*season*demandEventFactor(ctx,day)*weatherFactor(ctx,r.from,r.to,day)*(ctx.modifiers?.demand||1))));
 }
 function split(total,weights){const sum=weights.reduce((n,v)=>n+v,0),raw=weights.map(w=>total*w/sum),out=raw.map(Math.floor);let left=total-out.reduce((n,v)=>n+v,0);const order=raw.map((n,i)=>({i,r:n-out[i]})).sort((a,b)=>b.r-a.r||a.i-b.i);for(let i=0;i<left;i++)out[order[i].i]++;return out;}
 // Capped proportional choice, with an outside option. Overflow is redistributed once seats fill.

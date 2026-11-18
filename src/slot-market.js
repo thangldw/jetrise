@@ -57,6 +57,15 @@ export function quoteSlotActivation(ctx,airports){
  if(ctx.cash<fee)throw Error('Không đủ tiền mua quyền bảo toàn lịch hiện tại.');
  return {needs,units,fee,daily,minimum:fee+daily*SLOT_TERMS.commitment};
 }
+// Shared bookkeeping for a player's change of rights at one weekday/hour: used by direct purchases and auction wins.
+// The fee is charged here and recorded as signing spend; callers validate before calling.
+export function applyPlayerRights(s,key,quantity,owned,old,fee){
+ const market=s.slotMarket,rights=market.rights.player;
+ if(quantity)rights[key]={quantity:quantity,startedDay:quantity>owned?s.day:old.startedDay,unlockDay:quantity>owned?s.day+SLOT_TERMS.commitment:old.unlockDay};else delete rights[key];
+ if(market.conditional){const p=market.conditional;if(quantity>owned)p.newRights[key]=structuredClone(rights[key]);else{if(p.protected[key]){if(quantity)p.protected[key]=quantity;else delete p.protected[key];}if(p.newRights[key])delete p.newRights[key];}}
+ if(market.utilization){const u=market.utilization;if(quantity>owned){const previous=u.tracked[key];u.tracked[key]=!previous||(previous.releasedDay!==null&&s.day-previous.releasedDay>=7)?{startedDay:s.day,lastUsedDay:null,releasedDay:null}:{...previous,releasedDay:null};delete u.expired[key];}else if(u.tracked[key])u.tracked[key].releasedDay=s.day;}
+ s.cash-=fee;market.spent.player.signing+=fee;
+}
 export function sharedSlotAction(s,a,ctx){
  if(a.type==='slot-utilization-enable'){
   if(s.slotMarket?.version!==2||s.slotMarket.utilization||!validMigrationId(a.migrationId)||a.acceptTerms!==true)throw Error('Bật điều khoản quyền mới trước và xác nhận điều kiện khai thác thực tế.');
@@ -86,12 +95,11 @@ export function sharedSlotAction(s,a,ctx){
  const needed=slotRequirements({...ctx,slotMarket:market},s.tycoon).get(key)||0;
  if(a.quantity<needed)throw Error('Cần giữ '+needed+' quyền cho lịch tuần hoặc chặng đã cam kết. Sửa lịch/hoàn vé và chờ chuyến về trước khi trả quyền.');
  if(a.quantity>playerSlotPurchaseLimit(owned,others+other))throw Error('Mỗi thứ/giờ chỉ mua mới tối đa 1 quyền. Quyền đã sở hữu được giữ nguyên; đổi giờ bay hoặc chọn máy bay lớn hơn để tăng năng lực.');
+ if(a.quantity>owned&&market.auction)throw Error('Thị trường đang đấu giá: đặt giá thầu để mua thêm quyền. Chỉ có thể trả quyền trực tiếp.');
  if(a.quantity>owned&&market.utilization?.expired[key]&&s.day<market.utilization.expired[key].day+7)throw Error('Quyền bị thu hồi vì không khai thác; có thể mua lại từ ngày '+(market.utilization.expired[key].day+7)+'. AI có thể mua trong thời gian này.');
  const fee=Math.max(0,a.quantity-owned)*SLOT_TERMS.signing;if(s.cash<fee)throw Error('Không đủ tiền mua quyền slot.');
- if(a.quantity)rights[key]={quantity:a.quantity,startedDay:a.quantity>owned?s.day:old.startedDay,unlockDay:a.quantity>owned?s.day+SLOT_TERMS.commitment:old.unlockDay};else delete rights[key];
- if(market.conditional){const p=market.conditional;if(a.quantity>owned)p.newRights[key]=structuredClone(rights[key]);else{if(p.protected[key]){if(a.quantity)p.protected[key]=a.quantity;else delete p.protected[key];}if(p.newRights[key])delete p.newRights[key];}}
- if(market.utilization){const u=market.utilization;if(a.quantity>owned){const previous=u.tracked[key];u.tracked[key]=!previous||(previous.releasedDay!==null&&s.day-previous.releasedDay>=7)?{startedDay:s.day,lastUsedDay:null,releasedDay:null}:{...previous,releasedDay:null};delete u.expired[key];}else if(u.tracked[key])u.tracked[key].releasedDay=s.day;}
- s.cash-=fee;market.spent.player.signing+=fee;return a.quantity>owned?`Đã mua thêm ${a.quantity-owned} quyền · $${fee}; duy trì phần này $${a.quantity*SLOT_TERMS.daily}/ngày.`:'Đã trả quyền trống; dừng phí tương ứng, không hoàn phí mua.';
+ applyPlayerRights(s,key,a.quantity,owned,old,fee);
+ return a.quantity>owned?`Đã mua thêm ${a.quantity-owned} quyền · $${fee}; duy trì phần này $${a.quantity*SLOT_TERMS.daily}/ngày.`:'Đã trả quyền trống; dừng phí tương ứng, không hoàn phí mua.';
 }
 export function validateSlotMarket(s,ctx){
  const m=s.slotMarket;if(m===undefined)return;

@@ -1,5 +1,6 @@
 import {validMigrationId} from './live-leg-economy.js';
 import {SAVE_KEY,createGame,restoreGame,transition} from './game.js';
+import {markExported} from './export-reminder.js';
 export const BACKUP_KEY=SAVE_KEY+':backup',DAMAGED_KEY=SAVE_KEY+':damaged',WRITER_LOCK=SAVE_KEY+':writer';
 export function readSession(storage){
  try{const raw=storage.getItem(SAVE_KEY);if(raw===null)return {game:createGame(),raw,blocked:false};try{return {game:restoreGame(raw),raw,blocked:false};}catch{
@@ -107,6 +108,20 @@ export function readSlotUtilizationBackup(storage,game){
  const g=restoreGame(raw);if(g.slotMarket?.version!==2||g.slotMarket.migrationId!==game.slotMarket.migrationId||g.day!==u.enabledDay||JSON.stringify(g.slotMarket.rights.player)!==JSON.stringify(u.grandfathered))throw Error('Backup điều kiện khai thác không khớp.');
  return {raw,game:g};
 }
+export const slotAuctionBackupKey=id=>{if(!validMigrationId(id))throw Error('Invalid slot auction migration ID');return SAVE_KEY+':slot-auction:'+id;};
+export function readSlotAuctionBackup(storage,game){
+ const u=game.slotMarket?.auction;if(!u)throw Error('Chưa bật đấu giá slot.');
+ const raw=storage.getItem(slotAuctionBackupKey(u.migrationId));if(raw===null)throw Error('Không tìm thấy backup trước đấu giá slot.');
+ const g=restoreGame(raw);if(!g.slotMarket||g.slotMarket.auction||g.slotMarket.migrationId!==game.slotMarket.migrationId||g.day!==u.enabledDay)throw Error('Backup đấu giá slot không khớp.');
+ return {raw,game:g};
+}
+export const rivalHubsBackupKey=id=>{if(!validMigrationId(id))throw Error('Invalid rival hubs migration ID');return SAVE_KEY+':rival-hubs:'+id;};
+export function readRivalHubsBackup(storage,game){
+ const h=game.strategy?.expansion?.hubs;if(!h)throw Error('Chưa bật hub thứ hai của AI.');
+ const raw=storage.getItem(rivalHubsBackupKey(h.migrationId));if(raw===null)throw Error('Không tìm thấy backup trước hub thứ hai của AI.');
+ const g=restoreGame(raw);if(!g.strategy?.expansion||g.strategy.expansion.hubs||g.strategy.expansion.migrationId!==game.strategy.expansion.migrationId||g.day!==h.enabledDay)throw Error('Backup hub thứ hai của AI không khớp.');
+ return {raw,game:g};
+}
 export function persistGame(storage,game,expected){
  if(storage.getItem(SAVE_KEY)!==expected)throw Error('Tiến độ đã thay đổi ở tab khác. Tải bản mới nhất trước khi tiếp tục.');
  const raw=JSON.stringify(game),next=restoreGame(raw),previous=expected===null?null:restoreGame(expected);
@@ -164,6 +179,12 @@ export function persistGame(storage,game,expected){
   if(existing!==null&&existing!==expected)throw Error('Mã bản dự phòng đã được sử dụng. Thử bật lại.');
   writeVerified(storage,key,expected);
  }else if(oldExpansion&&(!expansion||expansion.migrationId!==oldExpansion.migrationId||expansion.enabledDay!==oldExpansion.enabledDay||JSON.stringify(expansion.shortlist)!==JSON.stringify(oldExpansion.shortlist)))throw Error('Không được xóa hoặc đổi mạng AI đã bật; dùng khôi phục bản trước chuyển đổi.');
+ const hubs=next.strategy?.expansion?.hubs,oldHubs=previous?.strategy?.expansion?.hubs;
+ if(hubs&&!oldHubs){
+  const r=previous&&transition(previous,{type:'rival-hubs-enable',migrationId:hubs.migrationId,acceptTerms:true});
+  if(!r||r.error||JSON.stringify(r.game)!==JSON.stringify(next))throw Error('Bật hub thứ hai của AI phải giữ nguyên vốn, tuyến và máy bay hiện có.');
+  const key=rivalHubsBackupKey(hubs.migrationId),existing=storage.getItem(key);if(existing!==null&&existing!==expected)throw Error('Mã backup hub AI đã được sử dụng.');writeVerified(storage,key,expected);
+ }else if(oldHubs&&(!hubs||hubs.migrationId!==oldHubs.migrationId||hubs.enabledDay!==oldHubs.enabledDay))throw Error('Không được xóa hoặc đổi hub thứ hai của AI; khôi phục toàn bộ backup bằng Save Manager.');
  const reservation=next.slotMarket?.conditional,oldReservation=previous?.slotMarket?.conditional;
  if(reservation&&!oldReservation){
   if(!previous?.slotMarket||previous.slotMarket.version!==1)throw Error('Lưu thị trường slot cũ trước khi bật điều khoản quyền mới.');
@@ -177,6 +198,12 @@ export function persistGame(storage,game,expected){
   if(!r||r.error||JSON.stringify(r.game)!==JSON.stringify(next))throw Error('Bật điều kiện khai thác phải giữ nguyên quyền, tiền và lịch.');
   const key=slotUtilizationBackupKey(usage.migrationId),existing=storage.getItem(key);if(existing!==null&&existing!==expected)throw Error('Mã backup khai thác đã được sử dụng.');writeVerified(storage,key,expected);
  }else if(oldUsage&&(!usage||usage.version!==oldUsage.version||usage.migrationId!==oldUsage.migrationId||usage.enabledDay!==oldUsage.enabledDay||JSON.stringify(usage.grandfathered)!==JSON.stringify(oldUsage.grandfathered)))throw Error('Không được xóa hoặc đổi điều kiện khai thác; khôi phục toàn bộ backup bằng Save Manager.');
+ const auction=next.slotMarket?.auction,oldAuction=previous?.slotMarket?.auction;
+ if(auction&&!oldAuction){
+  const r=previous&&transition(previous,{type:'slot-auction-enable',migrationId:auction.migrationId,acceptTerms:true});
+  if(!r||r.error||JSON.stringify(r.game)!==JSON.stringify(next))throw Error('Bật đấu giá phải giữ nguyên quyền, tiền và lịch.');
+  const key=slotAuctionBackupKey(auction.migrationId),existing=storage.getItem(key);if(existing!==null&&existing!==expected)throw Error('Mã backup đấu giá đã được sử dụng.');writeVerified(storage,key,expected);
+ }else if(oldAuction&&(!auction||auction.migrationId!==oldAuction.migrationId||auction.enabledDay!==oldAuction.enabledDay))throw Error('Không được xóa hoặc đổi đấu giá slot; khôi phục toàn bộ backup bằng Save Manager.');
  if(expected!==null){restoreGame(expected);writeVerified(storage,BACKUP_KEY,expected);}
  writeVerified(storage,SAVE_KEY,raw);return raw;
 }
@@ -206,7 +233,7 @@ export const SAVE_FILE_LIMIT=16*1024*1024,ARCHIVE_PREFIX=SAVE_KEY+':archive:';
 const SNAPSHOT_LIMIT=64,FORMAT='jetrise-save',REASONS=['import','restart','recovery','rollback','restore','package-backup'];
 const bytes=s=>new TextEncoder().encode(s).length;
 const revision=(storage,expected)=>{if(storage.getItem(SAVE_KEY)!==expected)throw Error('Tiến độ đã thay đổi ở tab khác. Tải bản mới nhất trước khi tiếp tục.');};
-const snapshotKey=key=>typeof key==='string'&&['leg-economy','overnight','advance-sales','slot-market','slot-reservation','slot-utilization','customer-strategy','rival-network'].some(kind=>key.startsWith(SAVE_KEY+':'+kind+':')&&validMigrationId(key.slice((SAVE_KEY+':'+kind+':').length)));
+const snapshotKey=key=>typeof key==='string'&&['leg-economy','overnight','advance-sales','slot-market','slot-reservation','slot-utilization','slot-auction','rival-hubs','customer-strategy','rival-network'].some(kind=>key.startsWith(SAVE_KEY+':'+kind+':')&&validMigrationId(key.slice((SAVE_KEY+':'+kind+':').length)));
 const refs=g=>[
  g.legEconomy&&{key:legBackupKey(g.legEconomy.migrationId),label:'Trước JET-201',read:readLegBackup},
  g.legEconomy?.overnight&&{key:overnightBackupKey(g.legEconomy.overnight.migrationId),label:'Trước JET-202',read:readOvernightBackup},
@@ -214,6 +241,8 @@ const refs=g=>[
  g.slotMarket&&{key:slotMarketBackupKey(g.slotMarket.migrationId),label:'Trước JET-204',read:readSlotMarketBackup},
  g.slotMarket?.conditional&&{key:slotReservationBackupKey(g.slotMarket.conditional.migrationId),label:'Trước điều khoản quyền mới',read:readSlotReservationBackup},
  g.slotMarket?.utilization&&{key:slotUtilizationBackupKey(g.slotMarket.utilization.migrationId),label:'Trước điều kiện khai thác thực tế',read:readSlotUtilizationBackup},
+ g.strategy?.expansion?.hubs&&{key:rivalHubsBackupKey(g.strategy.expansion.hubs.migrationId),label:'Trước hub thứ hai của AI',read:readRivalHubsBackup},
+ g.slotMarket?.auction&&{key:slotAuctionBackupKey(g.slotMarket.auction.migrationId),label:'Trước đấu giá slot',read:readSlotAuctionBackup},
  g.customerStrategy&&{key:customerBackupKey(g.customerStrategy.migrationId),label:'Trước JET-205',read:readCustomerBackup},
  g.strategy?.expansion&&{key:rivalNetworkBackupKey(g.strategy.expansion.migrationId),label:'Trước JET-206',read:readRivalNetworkBackup}
 ].filter(Boolean);
@@ -310,7 +339,7 @@ export function manageSave(storage,expected,action){
   let raw=expected;if(action.kind.startsWith('entry-')){if(!managedKey(action.key)||storage.getItem(action.key)!==action.stored)throw Error('Bản dự phòng vừa thay đổi. Tải lại danh sách.');try{raw=readSaveEntry(storage,action.key).raw;}catch(e){if(action.kind!=='entry-raw')throw e;raw=action.stored;}}
   if(raw===null)throw Error('Chưa có tiến độ được lưu.');
   if(action.kind.endsWith('raw'))return {download:{text:raw,name:'jetrise-save-original.json'},message:'Đã yêu cầu tải dữ liệu gốc. Giữ file ở nơi an toàn.'};
-  const bundle=exportSaveFile(storage,raw,action.kind==='export');return {download:{text:bundle.text,name:'jetrise-save-day-'+bundle.summary.day+'.json'},message:'Đã yêu cầu tải gói save · '+bundle.snapshots+' backup chuyển đổi.'+(bundle.missing.length?' Không kèm: '+bundle.missing.join(', ')+'.':'')};
+  const bundle=exportSaveFile(storage,raw,action.kind==='export');markExported(storage,bundle.summary.day);return {download:{text:bundle.text,name:'jetrise-save-day-'+bundle.summary.day+'.json'},message:'Đã yêu cầu tải gói save · '+bundle.snapshots+' backup chuyển đổi.'+(bundle.missing.length?' Không kèm: '+bundle.missing.join(', ')+'.':'')};
  }
  throw Error('Thao tác Save Manager không hợp lệ.');
 }

@@ -8,12 +8,16 @@ export const RESEARCH = {
   serviceSystems: {branch: 'commercial', requires: 'comfort', name: 'Quy trình phục vụ', price: 380000, days: 3, detail: 'Giảm 20% chi phí phục vụ/khách của định vị hãng; không giảm phí cố định hoặc gói mặt đất.'},
   loyalty: {branch: 'commercial', requires: 'serviceSystems', name: 'Chăm sóc khách mục tiêu', price: 650000, days: 5, detail: 'Tăng 6% hệ số lựa chọn của nhóm khách mục tiêu trong định vị đang dùng. Không tạo thêm ghế hay bảo đảm doanh thu.'},
   diagnostics: {branch: 'reliability', requires: 'maintenance', name: 'Chẩn đoán theo tình trạng', price: 420000, days: 3, detail: 'Giảm thêm 15% hao mòn còn lại mỗi vòng. Không sửa sự cố đã có.'},
+  weatherDesk: {branch: 'forecasting', name: 'Trung tâm khí tượng', price: 180000, days: 0, detail: 'Mở dự báo thời tiết sân bay xa thêm 1 ngày (4 ngày).'},
+  weatherModels: {branch: 'forecasting', requires: 'weatherDesk', name: 'Mô hình thời tiết', price: 350000, days: 3, detail: 'Dự báo thời tiết sân bay xa 5 ngày. Chỉ cho thông tin; không đổi thời tiết hay nhu cầu.'},
+  weatherRadar: {branch: 'forecasting', requires: 'weatherModels', name: 'Radar tầm xa', price: 600000, days: 5, detail: 'Dự báo thời tiết sân bay xa 7 ngày, khớp với phạm vi xử lý sự cố 7 ngày.'},
   reliability: {branch: 'reliability', requires: 'diagnostics', name: 'Kiểm soát độ bền', price: 700000, days: 5, detail: 'Giảm tiếp 10% hao mòn còn lại. Giữ nguyên hạn kiểm tra tuần, thời gian và giá bảo dưỡng.'},
 };
 export const RESEARCH_BRANCHES = [
   {id: 'efficiency', name: 'Hiệu suất khai thác', keys: ['fuel', 'dispatch', 'lightweight']},
   {id: 'commercial', name: 'Dịch vụ & thị trường', keys: ['comfort', 'serviceSystems', 'loyalty']},
   {id: 'reliability', name: 'Độ bền đội bay', keys: ['maintenance', 'diagnostics', 'reliability']},
+  {id: 'forecasting', name: 'Dự báo thời tiết', keys: ['weatherDesk', 'weatherModels', 'weatherRadar']},
 ];
 
 // Projections include a paid project's completion on its due day, without mutating progress.
@@ -27,6 +31,11 @@ export function researchEffects(s, day = s.day) {
   return {fuel: (done.has('dispatch') ? .97 : 1) * (done.has('lightweight') ? .98 : 1),
     wear: (done.has('diagnostics') ? .85 : 1) * (done.has('reliability') ? .9 : 1),
     positioningCost: done.has('serviceSystems') ? .8 : 1, loyalty: done.has('loyalty') ? 1.06 : 1};
+}
+// How many days of airport weather the player can see. Information only: it never changes weather or demand.
+export function weatherOutlookDays(s, day = s.day) {
+  const done = effectiveResearch(s, day);
+  return done.has('weatherRadar') ? 7 : done.has('weatherModels') ? 5 : done.has('weatherDesk') ? 4 : 3;
 }
 export function researchBlock(s, key) {
   const node = Object.hasOwn(RESEARCH, key) && RESEARCH[key];
