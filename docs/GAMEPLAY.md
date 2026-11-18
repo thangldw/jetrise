@@ -76,13 +76,16 @@ These are switched on explicitly and are off in a new career. Each activation sh
 | --- | --- |
 | **Competition** | Two local AI rival airlines compete for the same finite demand on your first hub's routes. Passengers choose by fare, departure time, amenities and reliability. Difficulty (easy, normal, hard) is chosen once at activation and sets rival cash, reliability and how quickly rivals react. Includes a 42-day challenge with no cash reward. |
 | **Contracts** | Up to three offers per seven-day cycle on routes you own, with standard or negotiated terms. Contract passengers take Economy seats first; a bonus is paid at 90% completion or a penalty at the deadline. |
-| **Market events** | Announced tourism, fuel and low-season events lasting four days. Paying for research reveals the exact effect in advance. |
+| **Weather** | Deterministic fog and storms per airport and day scale demand on every route touching that airport. A three-day outlook is shown in Strategy › Market; a forecasting research branch extends it to 4, 5 and 7 days. In Disruption recovery, legs hit by bad weather are flagged and suggest a delay (1 h fog, 3 h storm). |
+| **Market events** | Announced tourism, fuel and low-season events lasting four days; every seventh week is a storm-season event that cuts demand. Paying for research reveals the exact effect in advance. |
 | **Disruption recovery** | For a forecast cancellation you can swap aircraft, delay, lease a short-term replacement or cancel with passenger compensation, and compare the outcomes first. |
 | **Per-leg ledger** | Accounts for each flight leg separately, with ticket cash recognised at departure. Required by the systems below. |
 | **Connections** | Sells one-stop journeys across your network, including overnight and across the week boundary, with one fare split between both legs. |
 | **Advance sales** | Sells direct tickets up to six days ahead, capped at 40% of seats, at fares locked on the day of sale. Schedule changes after that require explicit refunds. |
 | **Airport slot rights** | Three chosen airports get a finite number of movements per hour, shared with the rivals. Rights are bought per weekday and hour and carry upkeep. |
 | **Rival network growth** | Rivals lease additional aircraft and open additional routes from their own cash, within fixed limits. |
+| **Slot auctions** | Optional on top of airport slot rights. New rights are won with sealed bids instead of bought at a fixed price: the bid is escrowed, bids close every seven days before the day runs, a winner pays the clearing price (the reserve or the highest rival bid) and a loser is refunded. Rights you already hold are unchanged. |
+| **Second rival hub** | Optional on top of rival network growth. After 14 days each rival may open one second hub from its own cash, then considers routes from it. Rival traffic stays point-to-point. |
 | **Positioning and loyalty** | Three service positions with different costs and passenger appeal, branched research projects, and aggregate customer loyalty by segment. |
 
 ## Guidance and review tools
@@ -101,7 +104,7 @@ The career is stored in the browser. The Save Manager can export it to a file, p
 
 - Other human players, accounts, cloud saves or any online service.
 - Real traffic, fares or airline economics; there is no external data feed.
-- Automatic weather or airport closures. Disruption scenarios are started by the player.
-- Slot auctions, additional rival hubs and rival connecting itineraries.
+- Airport closures. Weather changes demand and suggests delays in Disruption recovery, but it never cancels or delays a flight on its own. Disruption scenarios are started by the player.
+- Rival connecting itineraries, including from a rival's second hub.
 
 Balance has been checked for accounting consistency by automated long-run simulations, not tuned through human playtesting.

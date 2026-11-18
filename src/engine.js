@@ -11,7 +11,7 @@ import {settleConnections} from './network-economy.js';
 import {advanceReservations,applyAdvanceSales,sellAdvanceSales} from './advance-sales.js';
 import {slotConflict} from './airport-slots.js';
 import {operatingBase} from './fleet-policy.js';
-import {allocateContracts,closeContracts,demandEventFactor} from './gameplay.js';
+import {allocateContracts,closeContracts,demandEventFactor,weatherFactor} from './gameplay.js';
 import {potentialDemand,simulateCompetition} from './strategy.js';
 import {weeklyOverlap} from './week-time.js';
 import {atDay,applyCompletedService} from './maintenance.js';
@@ -41,7 +41,7 @@ function restore(value,ctx){if(value==null)return null;const s=JSON.parse(JSON.s
 function publicDemand(ctx,s,ri,day){
  if(ctx.strategy)return potentialDemand(ctx,ri,day);
  const key=marketKey(ctx.routes[ri]),indices=ctx.routes.map((r,i)=>marketKey(r)===key?i:-1).filter(i=>i>=0),baseRoute=ctx.routes[indices[0]],base=baseRoute.classDemand||[baseRoute.demand,Math.floor(baseRoute.demand*.18),Math.floor(baseRoute.demand*.035)],ideal=[baseRoute.baseFare,round(baseRoute.baseFare*2.5),baseRoute.baseFare*5],fallback=indices.find(i=>ctx.openedRoutes.includes(i))??indices[0],offered=dailySlots(s,day).filter(x=>!x.cancel&&indices.includes(x.route)),season=(baseRoute.weekPattern||[1,.95,1.08,1.02,1.12,1.15,.97])[(day-1)%7],comfort=s.research.includes('comfort')?1.1:1;
- return base.map((n,i)=>{let seats=0,total=0;for(const x of offered){const count=(s.cabins[x.plane]?.[i]||0)*2;seats+=count;total+=count*s.prices[x.route][i];}const fare=seats?total/seats:s.prices[fallback][i];return Math.max(0,Math.floor(n*season*comfort*positioningDemand({...ctx,tycoon:s},baseRoute,day)*demandEventFactor(ctx,day)*(ctx.modifiers?.demand||1)*Math.max(0,2-fare/ideal[i])));});
+ return base.map((n,i)=>{let seats=0,total=0;for(const x of offered){const count=(s.cabins[x.plane]?.[i]||0)*2;seats+=count;total+=count*s.prices[x.route][i];}const fare=seats?total/seats:s.prices[fallback][i];return Math.max(0,Math.floor(n*season*comfort*positioningDemand({...ctx,tycoon:s},baseRoute,day)*demandEventFactor(ctx,day)*weatherFactor(ctx,baseRoute.from,baseRoute.to,day)*(ctx.modifiers?.demand||1)*Math.max(0,2-fare/ideal[i])));});
 }
 function demand(ctx,s,ri,day){const result=publicDemand(ctx,s,ri,day);result[0]+=(ctx.gameplay?.contracts||[]).filter(c=>c.status==='active'&&day>=c.start&&day<=c.end&&sameMarket(ctx,c.route,ri)).reduce((n,c)=>n+c.target-c.delivered-pendingContractSeats(ctx.legEconomy,c.id),0);return result;}
 function capacity(ctx,s,ri,day){return dailySlots(s,day).filter(x=>{if(x.cancel||!sameMarket(ctx,x.route,ri)||sharedOccurrenceError(ctx,s,day,x.id))return false;const p=structuredClone(ctx.fleet.find(p=>p.id===x.plane));if(!p)return false;const r=x.timing?datedRound(ctx,s,day,x.id):null,start=r?.legs[0].departure??atDay(day)+x.start%24,hours=r?r.legs[1].arrival+.5-start:duration(ctx,x.plane,x.route);applyCompletedService(p,atDay(ctx.day)-1e-7,start);return p.wear<90&&!flightUnavailable(p,day,start%24,hours,ctx.day);}).reduce((sum,x)=>sum.map((n,i)=>n+(s.cabins[x.plane]?.[i]||0)*2),[0,0,0]);}

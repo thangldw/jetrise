@@ -8,6 +8,10 @@ import {projectedWeekReports} from './planner.js';
 
 export const RIVAL_NETWORK_TERMS=Object.freeze({maxFleet:3,maxRoutes:4,shortlist:12,...RIVAL_LEASE,overhead:2500,reserveDays:7});
 const sum=xs=>xs.reduce((a,b)=>a+b,0),cent=n=>Math.round(n*100),half=(n,i)=>i?Math.floor(n/2):Math.ceil(n/2);
+// Optional second hub per rival (opt-in on top of JET-206). A rival opens it at a review, from its own cash, at the
+// airport whose best outbound routes yield the most; the two rivals never share one. Rival connecting itineraries stay
+// out of scope: AI traffic from a second hub is point-to-point, like the rest of the AI network.
+export const RIVAL_HUB_TERMS=Object.freeze({fee:250000,minDays:14,shortlist:6,cashBuffer:500000});
 export const rivalMarketKey=r=>[r.from,r.to].sort().join('|');
 const hours=(ctx,r)=>Math.ceil((1+(r.cycle-1)*800/ctx.types.A320.speed)*4)/4;
 const cabin=r=>r.id==='swift'?[180,0,0]:[130,20,3];
@@ -18,6 +22,29 @@ export function rivalShortlist(ctx){
  const hub=ctx.airline.origin,all=airportList(ctx).filter(b=>b.iata!==hub&&b.major).flatMap(b=>{try{const q=routeQuote(ctx,hub,b.iata);return q.km<=ctx.types.A320.range&&hours(ctx,q)<=18?[q]:[];}catch{return [];}});
  const existing=ctx.strategy.rivals.flatMap(r=>r.route===null?[]:[ctx.routes[r.route]]),near=[...all].sort((a,b)=>a.km-b.km||a.to.localeCompare(b.to)).slice(0,4),yieldEstimate=q=>Math.min(360,q.demand)*q.baseFare-ctx.types.A320.nonfuel-ctx.types.A320.burn*hours(ctx,q)/6*(ctx.fuelPrice+3160*ctx.co2Price),yieldRank=[...all].sort((a,b)=>yieldEstimate(b)-yieldEstimate(a)||a.to.localeCompare(b.to));
  return [...new Map([...existing,...near,...yieldRank].map(r=>[rivalMarketKey(r),{from:r.from,to:r.to}])).values()].slice(0,RIVAL_NETWORK_TERMS.shortlist);
+}
+const hubYield=q=>Math.min(360,q.demand)*q.baseFare;
+// Static (no fuel or day dependence) so a save can verify the stored list exactly.
+export function hubShortlist(ctx,code){
+ return airportList(ctx).filter(b=>b.iata!==code&&b.major).flatMap(b=>{try{const q=routeQuote(ctx,code,b.iata);return q.km<=ctx.types.A320.range&&hours(ctx,q)<=18?[q]:[];}catch{return [];}})
+  .sort((a,b)=>hubYield(b)-hubYield(a)||a.to.localeCompare(b.to)).slice(0,RIVAL_HUB_TERMS.shortlist).map(q=>({from:code,to:q.to}));
+}
+export function chooseRivalHub(ctx,strategy){
+ const taken=new Set([ctx.airline.origin,...strategy.rivals.flatMap(x=>(x.network.hubs||[]).map(h=>h.code))]);let best=null;
+ for(const code of [...new Set(strategy.expansion.shortlist.map(p=>p.to))].sort()){
+  if(taken.has(code))continue;const list=hubShortlist(ctx,code);if(list.length<3)continue;
+  const score=sum(list.slice(0,3).map(p=>hubYield(routeQuote(ctx,p.from,p.to))));
+  if(!best||score>best.score+1e-9)best={code,score,shortlist:list};
+ }
+ return best;
+}
+// Pairs a rival may consider: the shared shortlist from the player's hub plus the shortlist of its own second hub.
+export const rivalPairs=(strategy,r)=>[...new Map([...strategy.expansion.shortlist,...(r.network.hubs||[]).flatMap(h=>h.shortlist)].map(p=>[rivalMarketKey(p),p])).values()];
+export function enableRivalHubs(s,a){
+ const e=s.strategy?.expansion;
+ if(!e||e.hubs||!validMigrationId(a.migrationId)||a.acceptTerms!==true)throw Error('Bật JET-206 và xác nhận điều khoản hub thứ hai của AI trước.');
+ e.hubs={version:1,migrationId:a.migrationId,enabledDay:s.day};
+ return 'Đã bật hub thứ hai cho AI; không đổi vốn, tuyến hay máy bay hiện có. AI xét mở hub sau '+RIVAL_HUB_TERMS.minDays+' ngày, bằng vốn riêng.';
 }
 export function enableRivalNetwork(s,a,ctx){
  if(!s.legEconomy||!s.strategy||!s.slotMarket)throw Error('Bật JET-201, cạnh tranh AI và thị trường slot chung JET-204 trước.');
@@ -32,7 +59,7 @@ export function enableRivalNetwork(s,a,ctx){
 }
 function fixedReserve(ctx,r){const t=ctx.types.A320;return sum(r.network.fleet.map(p=>7*(RIVAL_NETWORK_TERMS.overhead+(p.lease?RIVAL_NETWORK_TERMS.rent:0)+t.nonfuel+t.burn*3*(ctx.fuelPrice+3160*ctx.co2Price)+360*4)+Math.round(t.nonfuel*.35)))+7*dailyRights(ctx.slotMarket.rights[r.id]);}
 function candidate(strategy,ctx,id,key,day,planeId){
- const next=structuredClone(strategy),r=next.rivals.find(r=>r.id===id),pair=next.expansion.shortlist.find(p=>rivalMarketKey(p)===key);if(!pair)return null;
+ const next=structuredClone(strategy),r=next.rivals.find(r=>r.id===id),pair=rivalPairs(next,r).find(p=>rivalMarketKey(p)===key);if(!pair)return null;
  let routeFee=0;const owns=r.network.routes.some(p=>rivalMarketKey(p)===key);
  if(!owns){if(r.network.routes.length>=RIVAL_NETWORK_TERMS.maxRoutes)return null;routeFee=routeQuote(ctx,pair.from,pair.to).price;r.network.routes.push({...pair,openedDay:day,fee:routeFee,inherited:false});}
  const lease=!planeId;if(lease&&r.network.fleet.length>=3)return null;
@@ -54,7 +81,15 @@ export function reviewRivalNetwork(ctx,state,strategy,day){
   for(const p of r.network.fleet){p.weekProfit=0;p.weekPax=0;p.weekSeats=0;}r.weekProfit=0;r.weekPax=0;r.weekSeats=0;
   const baseline=project(strategy),score=days=>sum(days.map(d=>{const x=d.report.competition.rivals.find(x=>x.id===r.id);return x.profit-(x.slotSigning||0);})),before=score(baseline);
   let best=null,considered=0;
-  for(const pair of strategy.expansion.shortlist){const key=rivalMarketKey(pair);
+  if(strategy.expansion.hubs&&!r.network.hubs?.length&&day-strategy.expansion.hubs.enabledDay>=RIVAL_HUB_TERMS.minDays){
+   const hub=chooseRivalHub(ctx,strategy);
+   if(hub&&r.cash-RIVAL_HUB_TERMS.fee>=fixedReserve(ctx,r)+RIVAL_HUB_TERMS.cashBuffer){
+    r.cash-=RIVAL_HUB_TERMS.fee;r.network.hubs=[{code:hub.code,openedDay:day,fee:RIVAL_HUB_TERMS.fee,shortlist:hub.shortlist}];
+    const decision={day,kind:'hub',plane:null,market:null,incrementalProfit:0,routeFee:0,depositPaid:0,depositRefund:refund,returned:returns.map(p=>p.id),considered:0,cashBefore,cashAfter:r.cash,hub:hub.code,hubFee:RIVAL_HUB_TERMS.fee};
+    r.network.reviews=[decision,...r.network.reviews].slice(0,28);r.notice=`Mở hub thứ hai tại ${hub.code} (phí $${RIVAL_HUB_TERMS.fee.toLocaleString('en-US')}); xét tuyến từ hub này ở kỳ sau.`;actions[r.id]=decision;continue;
+   }
+  }
+  for(const pair of rivalPairs(strategy,r)){const key=rivalMarketKey(pair);
    // At most one acquisition or reassignment per rival per review, from the public shortlist.
    const trial=candidate(strategy,ctx,r.id,key,day,weak?.id);if(!trial)continue;considered++;
    const days=project(trial.strategy),delta=score(days)-before-trial.routeFee,flights=sum(days.map(d=>d.report.competition.rivals.find(x=>x.id===r.id).aircraft.find(p=>p.id===trial.plane)?.flights||0));
@@ -121,29 +156,33 @@ export function settleRivalNetwork(ctx,strategy,network,offers,day){
   cost+=receipt.daily;const profit=Math.round((revenue-cost)*100)/100;
   r.cash=Math.round((r.cash+profit-receipt.signing+sum(expired.map(p=>p.lease.deposit)))*100)/100;if(r.cash<0)throw Error('Rival cash reserve exceeded');
   r.profit+=profit;r.weekProfit+=profit;r.weekPax+=pax;r.weekSeats+=seats;r.network.through=end;
-  const before=ctx.strategy.rivals.find(x=>x.id===r.id).cash,depositPaid=operation.reviews?.depositPaid||0,routeFee=operation.reviews?.routeFee||0;
-  if(Math.abs(r.cash-(before+profit-receipt.signing-depositPaid-routeFee+refund))>.001)throw Error('Rival cash bridge does not reconcile');
-  return {id:r.id,route:r.route,pax,revenue,cost,profit,cash:r.cash,cashBefore:before,cashDelta:r.cash-before,depositRefund:refund,depositPaid,routeFee,slotSigning:receipt.signing,slotDaily:receipt.daily,seats,hour:receipt.hour,rotations:receipt.rotations,status:operation.status,network:true,aircraft,legs,review:operation.reviews||null};
+  const before=ctx.strategy.rivals.find(x=>x.id===r.id).cash,depositPaid=operation.reviews?.depositPaid||0,routeFee=operation.reviews?.routeFee||0,hubFee=operation.reviews?.hubFee||0;
+  if(Math.abs(r.cash-(before+profit-receipt.signing-depositPaid-routeFee-hubFee+refund))>.001)throw Error('Rival cash bridge does not reconcile');
+  return {id:r.id,route:r.route,pax,revenue,cost,profit,cash:r.cash,cashBefore:before,cashDelta:r.cash-before,depositRefund:refund,depositPaid,routeFee,...(hubFee?{hubFee}:{}),slotSigning:receipt.signing,slotDaily:receipt.daily,seats,hour:receipt.hour,rotations:receipt.rotations,status:operation.status,network:true,aircraft,legs,review:operation.reviews||null};
  });
 }
 export function validateRivalNetwork(s,ctx){
  const e=s.strategy?.expansion,fail=()=>{throw Error('Invalid rival network expansion');},int=(n,a,b)=>Number.isSafeInteger(n)&&n>=a&&n<=b,num=(n,a,b)=>Number.isFinite(n)&&n>=a&&n<=b;
  if(e===undefined){if(s.strategy?.rivals.some(r=>r.network!==undefined))fail();return;}
  if(!e||e.version!==1||!s.legEconomy||!s.slotMarket||!validMigrationId(e.migrationId)||!int(e.enabledDay,Math.max(s.legEconomy.enabledDay,s.slotMarket.enabledDay,s.strategy.startDay),s.day)||!int(e.nextReviewDay,s.day,s.day+7)||(e.nextReviewDay-e.enabledDay)%7||!Array.isArray(e.shortlist)||!e.shortlist.length||e.shortlist.length>12||new Set(e.shortlist.map(rivalMarketKey)).size!==e.shortlist.length)fail();
- const pairOK=p=>p&&p.from===s.airline.origin&&!!getAirport(ctx,p.to)&&p.from!==p.to;
+ const pairOK=(p,froms=[s.airline.origin])=>p&&froms.includes(p.from)&&!!getAirport(ctx,p.to)&&p.from!==p.to;
+ const h=e.hubs;if(h!==undefined&&(!h||Object.keys(h).sort().join(',')!=='enabledDay,migrationId,version'||h.version!==1||!validMigrationId(h.migrationId)||!int(h.enabledDay,e.enabledDay,s.day)))fail();
+ const hubCodes=s.strategy.rivals.flatMap(r=>(r.network?.hubs||[]).map(x=>x.code));if(new Set(hubCodes).size!==hubCodes.length)fail();
  for(const p of e.shortlist)if(!pairOK(p)||routeQuote(ctx,p.from,p.to).km>ctx.types.A320.range||hours(ctx,canonicalRivalRoute(ctx,p))>18)fail();
  for(const r of s.strategy.rivals){const n=r.network;if(!n||r.leases!==undefined||!Array.isArray(n.fleet)||n.fleet.length<1||n.fleet.length>3||!Array.isArray(n.routes)||n.routes.length>4||new Set(n.routes.map(rivalMarketKey)).size!==n.routes.length||!int(n.nextId,2,10000)||n.through!==(s.day-1)*24||!Array.isArray(n.reviews)||n.reviews.length>28)fail();
-  for(const p of n.routes)if(!pairOK(p)||!e.shortlist.some(x=>rivalMarketKey(x)===rivalMarketKey(p))||!int(p.openedDay,e.enabledDay,s.day)||typeof p.inherited!=='boolean'||p.fee!==(p.inherited?0:routeQuote(ctx,p.from,p.to).price))fail();
+  if(n.hubs!==undefined){if(!e.hubs||!Array.isArray(n.hubs)||n.hubs.length!==1)fail();const x=n.hubs[0];if(!x||Object.keys(x).sort().join(',')!=='code,fee,openedDay,shortlist'||x.code===s.airline.origin||!getAirport(ctx,x.code)||!int(x.openedDay,e.hubs.enabledDay+RIVAL_HUB_TERMS.minDays,s.day)||(x.openedDay-e.enabledDay)%7||x.fee!==RIVAL_HUB_TERMS.fee||JSON.stringify(x.shortlist)!==JSON.stringify(hubShortlist(ctx,x.code)))fail();}
+  const froms=[s.airline.origin,...(n.hubs||[]).map(x=>x.code)];
+  for(const p of n.routes)if(!pairOK(p,froms)||!rivalPairs(s.strategy,r).some(x=>rivalMarketKey(x)===rivalMarketKey(p))||!int(p.openedDay,e.enabledDay,s.day)||typeof p.inherited!=='boolean'||p.fee!==(p.inherited?0:routeQuote(ctx,p.from,p.to).price))fail();
   const seen=new Set();for(const [i,p] of n.fleet.entries()){
    const serial=Number(p?.id?.split('-').at(-1));if(!p||p.id!==r.id+'-'+serial||!int(serial,1,n.nextId-1)||seen.has(p.id)||p.model!=='A320'||!int(p.joinedDay,e.enabledDay,s.day)||!int(p.serviceDueDay,e.enabledDay,s.day+7)||!num(p.weekProfit,-1e10,1e10)||!int(p.weekPax,0,1e8)||!int(p.weekSeats,0,1e8)||p.weekPax>p.weekSeats||!(p.route===null||n.routes.some(x=>rivalMarketKey(x)===p.route)))fail();seen.add(p.id);
    if(i===0){if(serial!==1||p.lease!==undefined)fail();}else if(!p.lease||!int(p.lease.remaining,1,14)||p.lease.deposit!==500000)fail();
   }
-  for(const [i,d] of n.reviews.entries())if(!d||!int(d.day,e.enabledDay+7,s.day-1)||(d.day-e.enabledDay)%7||(i&&d.day>=n.reviews[i-1].day)||!['hold','return','lease','reroute'].includes(d.kind)||!num(d.incrementalProfit,0,1e10)||!int(d.routeFee,0,1e9)||![0,500000].includes(d.depositPaid)||!int(d.depositRefund,0,1000000)||d.depositRefund%500000||!int(d.considered,0,12)||!Array.isArray(d.returned)||d.returned.length>2||!num(d.cashBefore,0,1e10)||!num(d.cashAfter,0,1e10)||Math.abs(d.cashAfter-d.cashBefore+d.routeFee+d.depositPaid-d.depositRefund)>.01||(d.market!==null&&!e.shortlist.some(x=>rivalMarketKey(x)===d.market))||(d.plane!==null&&!new RegExp('^'+r.id+'-[1-9][0-9]*$').test(d.plane)))fail();
+  for(const [i,d] of n.reviews.entries())if(!d||!int(d.day,e.enabledDay+7,s.day-1)||(d.day-e.enabledDay)%7||(i&&d.day>=n.reviews[i-1].day)||!['hold','return','lease','reroute',...(e.hubs?['hub']:[])].includes(d.kind)||(d.kind==='hub'?!(n.hubs&&d.hub===n.hubs[0].code&&d.hubFee===RIVAL_HUB_TERMS.fee&&d.day===n.hubs[0].openedDay):d.hub!==undefined||d.hubFee!==undefined)||!num(d.incrementalProfit,0,1e10)||!int(d.routeFee,0,1e9)||![0,500000].includes(d.depositPaid)||!int(d.depositRefund,0,1000000)||d.depositRefund%500000||!int(d.considered,0,e.hubs?12+RIVAL_HUB_TERMS.shortlist:12)||!Array.isArray(d.returned)||d.returned.length>2||!num(d.cashBefore,0,1e10)||!num(d.cashAfter,0,1e10)||Math.abs(d.cashAfter-d.cashBefore+d.routeFee+d.depositPaid-d.depositRefund+(d.hubFee||0))>.01||(d.market!==null&&!rivalPairs(s.strategy,r).some(x=>rivalMarketKey(x)===d.market))||(d.plane!==null&&!new RegExp('^'+r.id+'-[1-9][0-9]*$').test(d.plane)))fail();
  }
  for(const h of s.tycoon?.history||[]){if(h.day<e.enabledDay)continue;const c=h.competition;if(!c||new Set(c.markets.map(m=>m.key)).size!==c.markets.length)fail();
   for(const m of c.markets){if(!pairOK({from:m.from===s.airline.origin?m.from:m.to,to:m.from===s.airline.origin?m.to:m.from})&&(!getAirport(ctx,m.from)||!getAirport(ctx,m.to)))fail();if(m.key!==[m.from,m.to].sort().join('|')||m.from===m.to||!int(m.outsideY,0,m.outside)||!Array.isArray(m.segments)||m.segments.length!==3)fail();for(const seg of m.segments)if(!['total','player','swift','aurelia','outside'].every(k=>int(seg[k],0,1e9))||seg.player+seg.swift+seg.aurelia+seg.outside!==seg.total)fail();}
   for(const [i,r] of c.rivals.entries()){
-   if(r.id!==s.strategy.rivals[i].id||r.network!==true||!['pax','revenue','cost','cash','cashBefore','depositRefund','depositPaid','routeFee','slotSigning','slotDaily','seats'].every(k=>num(r[k],0,1e11))||!num(r.profit,-1e11,1e11)||!num(r.cashDelta,-1e11,1e11)||Math.abs(r.revenue-r.cost-r.profit)>.001||Math.abs(r.cash-r.cashBefore-r.cashDelta)>.001||Math.abs(r.cashDelta-r.profit+r.slotSigning+r.depositPaid+r.routeFee-r.depositRefund)>.001||!Array.isArray(r.aircraft)||r.aircraft.length<1||r.aircraft.length>3||new Set(r.aircraft.map(a=>a.id)).size!==r.aircraft.length||!Array.isArray(r.legs)||r.legs.length>6||new Set(r.legs.map(l=>l.id)).size!==r.legs.length)fail();
+   if(r.id!==s.strategy.rivals[i].id||r.network!==true||!['pax','revenue','cost','cash','cashBefore','depositRefund','depositPaid','routeFee','slotSigning','slotDaily','seats'].every(k=>num(r[k],0,1e11))||!num(r.profit,-1e11,1e11)||!num(r.cashDelta,-1e11,1e11)||Math.abs(r.revenue-r.cost-r.profit)>.001||Math.abs(r.cash-r.cashBefore-r.cashDelta)>.001||Math.abs(r.cashDelta-r.profit+r.slotSigning+r.depositPaid+r.routeFee+(r.hubFee||0)-r.depositRefund)>.001||!Array.isArray(r.aircraft)||r.aircraft.length<1||r.aircraft.length>3||new Set(r.aircraft.map(a=>a.id)).size!==r.aircraft.length||!Array.isArray(r.legs)||r.legs.length>6||new Set(r.legs.map(l=>l.id)).size!==r.legs.length)fail();
    for(const a of r.aircraft)if(!a||typeof a.id!=='string'||![0,2].includes(a.flights)||!int(a.pax,0,a.seats)||!int(a.seats,0,360)||!num(a.profit,-1e9,1e9)||!num(a.revenue,0,1e9)||!num(a.cost,0,1e9)||Math.abs(a.revenue-a.cost-a.profit)>.001||!num(a.overhead,0,2500)||![0,10000].includes(a.rent)||![0,Math.round(ctx.types.A320.nonfuel*.35)].includes(a.maintenance))fail();
    for(const l of r.legs)if(!l||!r.aircraft.some(a=>a.id===l.plane)||!['out','back'].some(d=>l.id===`${r.id}:${l.plane}:${h.day}:${d}`)||!getAirport(ctx,l.from)||!getAirport(ctx,l.to)||l.from===l.to||!num(l.departure,(h.day-1)*24,h.day*24-.5)||!num(l.arrival,l.departure+.01,h.day*24-.5)||!int(l.pax,0,180)||!int(l.revenueCents,0,1e11)||!int(l.costCents,0,1e11))fail();
    for(const a of r.aircraft){const legs=r.legs.filter(l=>l.plane===a.id);if(legs.length!==a.flights||sum(legs.map(l=>l.pax))!==a.pax||cent(a.revenue)!==sum(legs.map(l=>l.revenueCents))||Math.abs(a.cost-sum(legs.map(l=>l.costCents))/100-a.overhead-a.rent-a.maintenance-r.slotDaily/r.aircraft.length)>.001)fail();}

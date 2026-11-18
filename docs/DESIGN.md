@@ -40,7 +40,7 @@ Until the first day has been run, Headquarters shows a short checklist derived f
 - **Icons.** Phosphor Icons.
 - **Imagery.** The map backdrop and aircraft renders are pre-rendered illustrations. The map is not navigation-grade; only routes and markers are interactive.
 
-Colours and spacing are CSS custom properties in `src/styles.css`.
+Colours and spacing are CSS custom properties in `src/styles/`.
 
 ## Controls
 
@@ -59,4 +59,6 @@ Colours and spacing are CSS custom properties in `src/styles.css`.
 - The current destination is marked with `aria-current`, and a skip link reaches the main content.
 - Navigating to a workspace moves focus to its heading.
 - Invalid fields set `aria-invalid` and the first error receives focus.
+- Pressing `R` outside a form field opens the run-day briefing.
+- The interface follows the system light or dark setting; `data-theme="light"` or `"dark"` on the root element forces one.
 - Motion respects `prefers-reduced-motion`. Sound is off until the player turns it on.

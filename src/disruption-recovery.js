@@ -6,6 +6,7 @@ import {guardJourneyChanges,legSupply,journeyBalances,validateOvernight} from '.
 import {validateLegEconomy} from './live-leg-economy.js';
 import {slotConflict} from './airport-slots.js';
 import {projectedWeekReports,plannerBasis} from './planner.js';
+import {weatherKind} from './gameplay.js';
 
 export const DISRUPTION_TERMS=Object.freeze({delayPerHour:500,compensationPerCustomer:50,rebookPerCustomer:25,reserveDispatch:2000,maxDelay:12,maxPropagation:24});
 const sum=xs=>xs.reduce((a,b)=>a+b,0),nowOf=s=>(s.day-1)*24,quarter=n=>Math.ceil((n-1e-7)*4)/4;
@@ -15,9 +16,21 @@ export const disruptionBasis=(ctx,state)=>JSON.stringify([ctx.cash,plannerBasis(
 const modes=['operate','wait','rebook','cancel','reserve'];
 export const RECOVERY_MODES={operate:'Bay khi sẵn sàng · hoàn nối chuyến bị lỡ',wait:'Chờ khách nối chuyến',rebook:'Đổi khách sang chuyến khác',cancel:'Hủy lượt chưa khởi hành',reserve:'Điều máy bay dự phòng'};
 
+// Weather delay a leg can expect, derived from the same airport/day hash that scales demand (nothing is stored).
+// A storm at either end holds the leg for 3 hours, fog for 1 hour; the player still chooses how to recover.
+export const WEATHER_DELAY_HOURS=Object.freeze({fog:1,storm:3});
+export function weatherDelayHint(ctx,leg){
+ if(!ctx.gameplay)return null;
+ const dayOf=h=>Math.floor(h/24)+1;let best=null;
+ for(const [airport,day] of [[leg.from,dayOf(leg.departure)],[leg.to,dayOf(leg.arrival-1e-7)]]){
+  const kind=weatherKind(airport,day);
+  if(kind!=='clear'&&(!best||WEATHER_DELAY_HOURS[kind]>WEATHER_DELAY_HOURS[best.kind]))best={airport,kind,delay:WEATHER_DELAY_HOURS[kind]};
+ }
+ return best;
+}
 export function disruptionCandidates(ctx,state){
  const now=nowOf(ctx);
- return datedRounds(ctx,state).filter(r=>!r.cancelled&&!r.timing).flatMap(r=>r.legs.filter(l=>l.arrival>=now).map(l=>({id:l.id,plane:r.plane,route:r.route,from:l.from,to:l.to,departure:l.departure,arrival:l.arrival,airborne:l.departure<now})));
+ return datedRounds(ctx,state).filter(r=>!r.cancelled&&!r.timing).flatMap(r=>r.legs.filter(l=>l.arrival>=now).map(l=>({id:l.id,plane:r.plane,route:r.route,from:l.from,to:l.to,departure:l.departure,arrival:l.arrival,airborne:l.departure<now,weather:weatherDelayHint(ctx,l)})));
 }
 
 function build(s,ctx,a){
