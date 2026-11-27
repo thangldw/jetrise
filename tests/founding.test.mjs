@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame,transition,restoreGame,context,routesFor,Engine,TYPES} from '../src/game.js';
-import {drawLogos,drawColors,drawStartingAircraft,whiteContrast,suggestedRoutes,STARTING_MODELS} from '../src/founding.js';
+import {drawLogos,drawColors,drawStartingAircraft,whiteContrast,suggestedRoutes,STARTING_MODELS,STARTING_REGIONAL,STARTING_CORE} from '../src/founding.js';
 import {abbreviation} from '../src/registration.js';
 import {getAirport} from '../src/network.js';
 const act=(s,a)=>{const r=transition(s,a);assert(!r.error,r.error);return r.game;};
@@ -14,8 +14,8 @@ test('logo and color rerolls return the requested distinct counts with no repeat
  assert.equal(new Set(drawColors(()=>0)).size,6);
 });
 test('starting aircraft draws stay inside the medium-haul pool and cannot contain a widebody or duplicate',()=>{
- const seen=new Set();for(let n=0;n<100;n++){const draw=drawStartingAircraft(()=>n/100);assert.equal(draw.length,2);assert.notEqual(draw[0],draw[1]);draw.forEach(k=>{assert(STARTING_MODELS.includes(k));seen.add(k);});}
- assert.equal(seen.size,STARTING_MODELS.length);for(const models of [['A320','B788'],['A320','A320'],['E190','B738'],[]]){const old=createGame(),r=transition(old,{type:'setup',name:'Aurora Air',origin:'HAN',logo:'wing',color:'#123abc',models});assert(r.error);assert.strictEqual(r.game,old);}
+ const seen=new Set();for(let n=0;n<100;n++){const draw=drawStartingAircraft(()=>n/100);assert.equal(draw.length,2);assert.notEqual(draw[0],draw[1]);assert(STARTING_REGIONAL.includes(draw[0])&&STARTING_CORE.includes(draw[1]));draw.forEach(k=>{assert(STARTING_MODELS.includes(k));seen.add(k);});}
+ assert.equal(seen.size,STARTING_REGIONAL.length+STARTING_CORE.length);for(const models of [['A320','B788'],['A320','A320'],['E190','B738'],[]]){const old=createGame(),r=transition(old,{type:'setup',name:'Aurora Air',origin:'HAN',logo:'wing',color:'#123abc',models});assert(r.error);assert.strictEqual(r.game,old);}
 });
 test('founding grants exactly $500m and two owned aircraft once, without an automatic route or schedule',()=>{
  const s=setup();assert.equal(s.cash,500000000);assert.equal(s.hq.ledger[0].amount,500000000);assert.deepEqual(s.fleet.map(p=>p.id),['AA-101','AA-102']);assert.deepEqual(s.fleet.map(p=>p.type),['A320','B738']);assert(s.fleet.every(p=>!p.lease&&p.wear===0&&p.hub==='HAN'));assert.equal(s.nextAircraftNumber,103);assert.equal(s.openedRoutes.length,0);assert.equal(s.tycoon.schedules.length,0);assert.deepEqual(restoreGame(JSON.stringify(s)),s);assert(transition(s,{type:'setup',name:'Other',origin:'HAN',logo:'wing',color:'#123abc',models:['A320','B738']}).error);assert.equal(s.cash,500000000);

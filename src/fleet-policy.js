@@ -1,6 +1,6 @@
 // Synthetic support contracts; absent policy preserves legacy operating costs.
 export const FLEET_FAMILIES={
- A320:{name:'Airbus A320 family',models:['A320','A321']},A220:{name:'Airbus A220',models:['A223']},A330:{name:'Airbus A330',models:['A339']},A350:{name:'Airbus A350',models:['A359','A351']},A380:{name:'Airbus A380',models:['A388']},B737:{name:'Boeing 737 family',models:['B738','B38M']},B787:{name:'Boeing 787 family',models:['B788','B789']},B777:{name:'Boeing 777',models:['B77W']},E190:{name:'Embraer E190',models:['E190']}
+ A320:{name:'Airbus A320 family',models:['A320','A321']},A220:{name:'Airbus A220',models:['A221','A223']},A330:{name:'Airbus A330',models:['A332','A339']},A350:{name:'Airbus A350',models:['A359','A351']},A380:{name:'Airbus A380',models:['A388']},B737:{name:'Boeing 737 family',models:['B738','B739','B38M']},B787:{name:'Boeing 787 family',models:['B788','B789']},B777:{name:'Boeing 777',models:['B772','B77W']},E190:{name:'Embraer E190',models:['E190','E295']},B767:{name:'Boeing 767',models:['B763']}
 };
 export const SUPPORT_TERMS=Object.freeze({setup:25000,daily:1200,extraFamily:800,discount:.08,lockDays:7});
 export const familyOf=model=>Object.keys(FLEET_FAMILIES).find(k=>FLEET_FAMILIES[k].models.includes(model));

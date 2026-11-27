@@ -10,7 +10,7 @@ test('automatic resource top-ups and insufficient-cash guard',()=>{const s=creat
 test('purchase, maintenance, route unlocking and shared class pools',()=>{let s=createGame();s=transition(s,{type:'repair',plane:'VN-A104'}).game;assert.equal(s.fleet[2].wear,96);assert(s.fleet[2].maintenance);assert.equal(s.cash,8540000);const buy=transition(s,{type:'buy-used',model:'E190',tier:0});assert(!buy.error);assert.equal(buy.game.fleet.length,4);assert(buy.game.tycoon.cabins[buy.game.fleet[3].id]);const unlocked=transition(s,{type:'unlock',route:3});assert(unlocked.game.openedRoutes.includes(3));assert(transition(unlocked.game,{type:'unlock',route:3}).error);s.tycoon.schedules=[];for(const p of s.fleet)for(const start of [0,6,12,18])Engine.add(context(s),s.tycoon,p.id,0,start);const r=forecast(s),pool=Engine.demand(context(s),s.tycoon,0,1);for(let c=0;c<3;c++)assert(r.rows.reduce((n,x)=>n+x.passengers[c],0)<=pool[c]);assert(r.rows.every(x=>x.passengers.every((n,i)=>n<=s.tycoon.cabins[x.plane][i]*2)));});
 
 test('every catalog model can be bought, configured, scheduled, flown and restored',()=>{
- assert.equal(Object.keys(TYPES).length,13);
+ assert.equal(Object.keys(TYPES).length,19);
  for(const [model,type] of Object.entries(TYPES)){
   let s=createGame();s.cash=100000000;
   const purchase=transition(s,{type:'buy',model});assert(!purchase.error,model);

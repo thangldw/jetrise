@@ -1,9 +1,12 @@
 import {LOGOS,airportList,getAirport,routeQuote} from './network.js';
 import Engine from './engine.js';
-export const STARTING_MODELS=['A223','A320','A321','B738','B38M'];
+// Starting fleets pair one small regional jet with one mid-size narrowbody, so no draw starts far ahead of another.
+export const STARTING_REGIONAL=['A221','A223','E295'], STARTING_CORE=['A320','B738','B38M'];
+// Curated scenarios may start with larger jets, so those are valid at founding even though the random draw never offers them.
+export const STARTING_MODELS=[...STARTING_REGIONAL,...STARTING_CORE,'A321'];
 const sample=(items,count,random)=>{const pool=[...items],out=[];for(let i=0;i<count&&pool.length;i++)out.push(pool.splice(Math.min(pool.length-1,Math.floor(random()*pool.length)),1)[0]);return out;};
 export const drawLogos=(random=Math.random,previous=[])=>sample(LOGOS.filter(([id])=>!previous.some(([key])=>key===id)),3,random);
-export const drawStartingAircraft=(random=Math.random)=>sample(STARTING_MODELS,2,random);
+export const drawStartingAircraft=(random=Math.random)=>[...sample(STARTING_REGIONAL,1,random),...sample(STARTING_CORE,1,random)];
 export {abbreviation} from './registration.js';
 const luminance=hex=>{const c=hex.slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
 export const whiteContrast=hex=>1.05/(luminance(hex)+.05);

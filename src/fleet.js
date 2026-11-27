@@ -27,6 +27,12 @@ export const PROFILES={
  B738:'Thân hẹp phổ biến cho nội địa và khu vực. Giá mua mô phỏng thấp, đổi lại mức tiêu thụ nhiên liệu cao hơn 737 MAX 8.',
  B38M:'Thân hẹp có sức chứa nhỉnh hơn 737-800 và nhiên liệu mô phỏng thấp hơn. Phù hợp khai thác tần suất cao trên tuyến đông khách.',
  B789:'Thân rộng lớn hơn 787-8, phục vụ chiến lược gom khách đường dài. Cân nhắc nhu cầu Y/J/F và chi phí trước khi thay máy bay nhỏ.',
+ A221:'Phiên bản nhỏ nhất của dòng A220, ít ghế hơn A220-300. Hợp tuyến mỏng và mở tuyến mới với rủi ro dư ghế thấp.',
+ E295:'Máy bay khu vực thế hệ mới, nhiều ghế hơn E190 và tiết kiệm hơn trên mỗi ghế. Tầm bay ngắn hơn A220, hợp tuyến khu vực đông khách.',
+ B739:'Thân hẹp nhiều ghế hơn 737-800 với tầm bay xa hơn. Hợp trục nội địa đông khách, đổi lại nhiên liệu cao hơn 737 MAX 8.',
+ B763:'Thân rộng cỡ nhỏ, giá mua thấp. Mở tuyến đường dài sớm mà không cần vốn lớn, nhưng tiêu thụ nhiên liệu cao trên mỗi ghế.',
+ A332:'Thân rộng thế hệ cũ hơn A330-900neo: giá thấp hơn, ít ghế hơn, nhiên liệu cao hơn. Hợp tuyến xa vừa phải khi cần giữ vốn.',
+ B772:'Thân rộng đường dài thế hệ trước 777-300ER: ít ghế hơn, giá thấp hơn. Hợp tuyến xa có nhu cầu lớn khi chưa cần cabin 396 ghế.',
  B77W:'Thân rộng sức chứa lớn, phù hợp tuyến trục mật độ cao. Nhiên liệu và chi phí mỗi vòng lớn khiến chuyến ít khách dễ thua lỗ.'
 };
 export function normalizePlane(p,day){
