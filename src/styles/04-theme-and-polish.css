@@ -93,6 +93,27 @@ h1,h2,h3{letter-spacing:-.018em}
 .replay-aircraft text{fill:#fff;font-weight:600;paint-order:stroke;stroke:#061326;stroke-width:.3em}
 .replay-progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:#ffffff1f}
 .replay-progress>i{display:block;height:100%;background:var(--cta)}
+.replay-arc.rival{stroke:#c4b5fd;stroke-opacity:.22}
+.replay-aircraft.rival path{fill:#c4b5fd}
+.replay-aircraft.rival-1 path{fill:#f9a8d4}
+.replay-weather{fill:#b6c6d6;fill-opacity:.16;stroke:#b6c6d6;stroke-opacity:.55;stroke-width:1}
+.replay-weather.storm{fill:#a78bfa;fill-opacity:.2;stroke:#c4b5fd;stroke-opacity:.8;stroke-dasharray:4 3}
+.replay-popup{fill:#ffe0aa;font-weight:700;paint-order:stroke;stroke:#061326;stroke-width:.3em;font-variant-numeric:tabular-nums}
+.replay-legend,.replay-cancelled{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted)}
+.replay-legend li,.replay-cancelled li{display:flex;align-items:center;gap:6px}
+.replay-cancelled li{flex-wrap:wrap}
+.replay-legend li>svg:not([class]){width:16px;height:14px}
+.replay-legend .rival-0 path{fill:#8b5cf6}
+.replay-legend .rival-1 path{fill:#ec4899}
+.replay-cancelled li{color:#c2410c}
+.replay-cancelled b{font-weight:700}
+.replay-cancelled em{font-style:normal;color:var(--muted)}
+.replay-highlights{display:flex;flex-wrap:wrap;gap:10px;min-height:36px}
+.replay-highlights>div{flex:1 1 220px;display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px}
+.replay-highlights>div.negative{border-left-color:#c2410c}
+.replay-highlights small{font-size:11px;color:var(--muted)}
+.replay-highlights b{font-size:13px}
+.replay-highlights span{font-size:12px;font-variant-numeric:tabular-nums}
 .replay-airborne{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
 .replay-airborne li{display:flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;font-size:12px}
 .replay-airborne li span{color:var(--muted);font-variant-numeric:tabular-nums}

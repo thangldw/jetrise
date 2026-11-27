@@ -68,7 +68,13 @@ Thirteen aircraft types, each with its own speed, range, seat capacity, fuel bur
 
 Before a day is run, a briefing shows the forecast, known cancellations, the cash required and the expected closing cash. Confirming it settles every flight of that day and produces the actual report. History is kept for the last 28 days.
 
-After a day with flights is settled, the map replays it before the report opens: each aircraft flies its legs at the settled times and ticket revenue is added as legs depart. The replay can be paused, sped up or skipped, it ends on the same totals as the report, and it is not shown when the system asks for reduced motion. It is a presentation of the settled result and changes nothing.
+After a day with flights is settled, the map replays it before the report opens. It is a presentation of the settled result and changes nothing.
+
+- Each aircraft flies its legs at the settled times. Ticket revenue is added, and shown at the departure airport, as each leg departs; the list under the map shows how full each airborne leg is.
+- Airports with fog or a storm that day are ringed and listed with their demand effect. Flights the day cancelled are listed with the reason from their scheduled time.
+- With Competition on, rival aircraft fly their own legs in a second colour. They are shown only; the counters are the player's.
+- The day closes on the same revenue, passengers and profit as the report, with the most profitable and the weakest round trip of the day.
+- Pause or resume (also with Space), play at 1×, 2× or 4×, or skip to the result. The replay can be turned off in the settings and is never shown when the system asks for reduced motion or when no flight operated.
 
 ## Optional strategy systems
 
