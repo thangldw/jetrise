@@ -68,6 +68,8 @@ Thirteen aircraft types, each with its own speed, range, seat capacity, fuel bur
 
 Before a day is run, a briefing shows the forecast, known cancellations, the cash required and the expected closing cash. Confirming it settles every flight of that day and produces the actual report. History is kept for the last 28 days.
 
+After a day with flights is settled, the map replays it before the report opens: each aircraft flies its legs at the settled times and ticket revenue is added as legs depart. The replay can be paused, sped up or skipped, it ends on the same totals as the report, and it is not shown when the system asks for reduced motion. It is a presentation of the settled result and changes nothing.
+
 ## Optional strategy systems
 
 These are switched on explicitly and are off in a new career. Each activation shows a before/after forecast first. Several of them change the accounting model, so the game stores a backup at activation and offers a whole-career rollback.
