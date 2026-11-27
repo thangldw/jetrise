@@ -4,9 +4,10 @@ const narrow = (economy=[3,3]) => [economy,[2,2],[1,1]];
 const wide = (economy=[3,3,3]) => [economy,[1,2,1],[1,2,1]];
 export const CABIN_PROFILES = {
  A320:narrow(), A321:narrow(), B738:narrow(), B38M:narrow(),
- A223:narrow([2,3]), E190:narrow([2,2]),
+ A223:narrow([2,3]), E190:narrow([2,2]), A221:narrow([2,3]), E295:narrow([2,2]), B739:narrow(),
  B788:wide(), B789:wide(), A359:wide(), A351:wide(),
- A339:wide([2,4,2]), B77W:wide([3,4,3]), A388:wide([3,4,3])
+ A339:wide([2,4,2]), B77W:wide([3,4,3]), A388:wide([3,4,3]),
+ B763:wide([2,3,2]), A332:wide([2,4,2]), B772:wide([3,3,3])
 };
 export function cabinLayout(counts,model='A320') {
  const layouts=CABIN_PROFILES[model]||CABIN_PROFILES.A320;

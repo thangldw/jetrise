@@ -40,7 +40,13 @@ export const TYPES={
  B738:{speed:825,name:'Boeing 737-800',seats:189,range:5400,burn:10.5,nonfuel:10500,price:4200000},
  B38M:{speed:830,name:'Boeing 737 MAX 8',seats:200,range:6500,burn:8.2,nonfuel:11200,price:5600000},
  B789:{speed:900,name:'Boeing 787-9',seats:290,range:14000,burn:18.2,nonfuel:21800,price:23500000},
- B77W:{speed:890,name:'Boeing 777-300ER',seats:396,range:13600,burn:28,nonfuel:31000,price:31800000}
+ B77W:{speed:890,name:'Boeing 777-300ER',seats:396,range:13600,burn:28,nonfuel:31000,price:31800000},
+ A221:{speed:820,name:'Airbus A220-100',seats:120,range:6700,burn:5.4,nonfuel:7200,price:3100000},
+ E295:{speed:820,name:'Embraer E195-E2',seats:132,range:4800,burn:5.9,nonfuel:7000,price:2900000},
+ B739:{speed:830,name:'Boeing 737-900ER',seats:215,range:5900,burn:11.4,nonfuel:11800,price:4900000},
+ B763:{speed:850,name:'Boeing 767-300ER',seats:218,range:11000,burn:15.5,nonfuel:17500,price:9500000},
+ A332:{speed:870,name:'Airbus A330-200',seats:250,range:13400,burn:19.5,nonfuel:20500,price:12500000},
+ B772:{speed:890,name:'Boeing 777-200ER',seats:314,range:13000,burn:23.5,nonfuel:26000,price:18500000}
 };
 export const ROUTES=[
  {from:'HAN',code:'HAN → BKK',to:'BKK',name:'Bangkok',country:'Thái Lan',km:990,cycle:5.8,baseFare:145,demand:850,x:.22,y:.30},

@@ -20,9 +20,9 @@ Thirteen aircraft types, each with its own speed, range, seat capacity, fuel bur
 
 | Family | Types |
 | --- | --- |
-| Airbus | A220-300, A320neo, A321neo, A330-900neo, A350-900, A350-1000, A380-800 |
-| Boeing | 737-800, 737 MAX 8, 787-8, 787-9, 777-300ER |
-| Embraer | E190 |
+| Airbus | A220-100, A220-300, A320neo, A321neo, A330-200, A330-900neo, A350-900, A350-1000, A380-800 |
+| Boeing | 737-800, 737-900ER, 737 MAX 8, 767-300ER, 787-8, 787-9, 777-200ER, 777-300ER |
+| Embraer | E190, E195-E2 |
 
 - **Acquisition.** New orders are delivered after two or four days. Used aircraft are available immediately and priced by age and wear. A standard lease runs 14 days with daily rent, a refundable deposit, early return and expiry.
 - **Limits.** The fleet is capped at eight aircraft including pending deliveries. Registrations are unique and persistent.

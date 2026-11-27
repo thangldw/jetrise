@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Six new aircraft models: A220-100, E195-E2, 737-900ER, 767-300ER, A330-200 and 777-200ER.
+- Founding draw now pairs one small regional jet with one mid-size narrowbody, so starting fleets are comparable.
 - Day replay: after a day with flights is run, the map plays the day back with each aircraft flying its settled legs, a running ticket-revenue and passenger count, and pause, 1×/2×/4× and skip controls, then opens the report. It ends on the report's totals, changes no rules and no save data, and is skipped under reduced motion.
 - The replay also shows that day's fog and storms with their demand effect, cancelled flights with their reason, rival aircraft when Competition is on, how full each airborne leg is, and the most profitable and weakest round trip when the day closes. It can be turned off in the settings.
 
