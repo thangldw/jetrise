@@ -41,7 +41,7 @@ test('cross-week daily settlement books the Sunday round once and respects previ
  r=transition(s,{type:'advance'});assert(!r.error);assert.equal(r.report.flights,0);
 });
 test('economy v2 preserves founding grant but constrains capital expansion; legacy valuations and leases stay unchanged',()=>{
- let s=startup();assert.equal(s.cash,500000000);assert.equal(s.economyVersion,2);assert.equal(typesFor(s).A320.price,57600000);assert(typesFor(s).A388.price>s.cash);
+ let s=startup();assert.equal(s.cash,100000000);assert.equal(s.economyVersion,2);assert.equal(typesFor(s).A320.price,57600000);assert(typesFor(s).A388.price>s.cash);
  assert(transition(s,{type:'buy',model:'A388'}).error);s=act(s,{type:'lease',model:'A320'});const p=s.fleet.at(-1);assert.equal(p.lease.rate,14400);assert.equal(p.lease.deposit,2880000);assert.equal(restoreGame(JSON.stringify(s)).fleet.at(-1).lease.rate,14400);
  const legacy=createGame();delete legacy.economyVersion;const loaded=restoreGame(JSON.stringify(legacy));assert.equal(typesFor(loaded).A320.price,TYPES.A320.price);assert.equal(loaded.cash,legacy.cash);
 });

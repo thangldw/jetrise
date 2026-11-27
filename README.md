@@ -8,7 +8,7 @@ JETRISE is a single-player airline-management game that runs entirely in the bro
 
 ## What is in the game
 
-- **Founding.** Pick a home airport from about 4,000 real airports, name the airline, choose a logo and colour, and start with $500 million and two aircraft.
+- **Founding.** Pick a home airport from about 4,000 real airports, name the airline, choose a logo and colour, and start with $100 million and two aircraft.
 - **Fleet.** Thirteen Airbus, Boeing and Embraer types to buy new, buy used or lease, each with its own cabin layout, amenities and livery.
 - **Network.** Open routes from your hubs on a world map; passenger demand per airport pair is finite and shared by every flight on the route.
 - **Schedule.** A repeating 168-hour weekly timetable with 15-minute departures, maintenance windows and an automatic schedule proposal you can preview before applying.

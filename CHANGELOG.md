@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Starting cash for a new airline is $100 million (was $500 million). Existing careers are unchanged. At the new economy's prices that buys about one new narrowbody, so early growth leans on leasing and route choice.
+
 - Six new aircraft models: A220-100, E195-E2, 737-900ER, 767-300ER, A330-200 and 777-200ER.
 - Founding draw now pairs one small regional jet with one mid-size narrowbody, so starting fleets are comparable.
 - Day replay: after a day with flights is run, the map plays the day back with each aircraft flying its settled legs, a running ticket-revenue and passenger count, and pause, 1×/2×/4× and skip controls, then opens the report. It ends on the report's totals, changes no rules and no save data, and is skipped under reduced motion.

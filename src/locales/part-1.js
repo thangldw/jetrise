@@ -1828,9 +1828,9 @@ export const messages = {
     "en": "Airline preview",
     "ja": "航空会社プレビュー"
   },
-  "$500 triệu": {
-    "en": "$500 million",
-    "ja": "5億ドル"
+  "$100 triệu": {
+    "en": "$100 million",
+    "ja": "1億ドル"
   },
   "Số hiệu dự kiến": {
     "en": "Expected registrations",
@@ -3200,9 +3200,9 @@ export const messages = {
     "en": "Complete",
     "ja": "完了"
   },
-  "Đã thành lập {0} · cấp $500.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.": {
-    "en": "Established {0} · granted $500,000,000 and 2 mid-range aircraft. Prepare your fleet before choosing a route.",
-    "ja": "{0}を設立しました · 5億ドルと中距離機2機を支給。路線選択の前に機材を準備してください。"
+  "Đã thành lập {0} · cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.": {
+    "en": "Established {0} · granted $100,000,000 and 2 mid-range aircraft. Prepare your fleet before choosing a route.",
+    "ja": "{0}を設立しました · 1億ドルと中距離機2機を支給。路線選択の前に機材を準備してください。"
   },
   "Không ở bước chuẩn bị đội bay.": {
     "en": "Not in the fleet preparation stage.",

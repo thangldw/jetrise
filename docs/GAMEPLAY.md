@@ -11,7 +11,7 @@ Time advances only when you run a day. There is no real-time clock, no offline e
 ## Founding
 
 - Choose a home airport, airline name, logo and colour. The registration prefix is derived from the name.
-- The airline receives $500 million and two different medium-range aircraft, once.
+- The airline receives $100 million and two different medium-range aircraft, once.
 - Before the first flight you can configure cabins, amenities and livery, and open starting routes. The game suggests up to two domestic routes and one international route; you can also define your own.
 
 ## Fleet
