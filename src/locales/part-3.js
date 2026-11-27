@@ -1847,9 +1847,9 @@ export const messages = {
     "en": "6 more colors",
     "ja": "別の色を6つ"
   },
-  "· nhận $500 triệu": {
-    "en": "· receive $500 million",
-    "ja": "・5億ドルを受け取る"
+  "· nhận $100 triệu": {
+    "en": "· receive $100 million",
+    "ja": "・1億ドルを受け取る"
   },
   "Nối chuyến": {
     "en": "Connections",
@@ -3199,9 +3199,9 @@ export const messages = {
     "en": "Two distinct medium-range aircraft models from the random draw are required.",
     "ja": "ランダム抽選から異なる中距離機種を2つ選ぶ必要があります。"
   },
-  "· cấp $500.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.": {
-    "en": "· granted $500,000,000 and 2 medium-range aircraft. Prepare your fleet before choosing routes.",
-    "ja": "・500,000,000ドルと中距離機2機を付与しました。路線選択前に機材を準備してください。"
+  "· cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.": {
+    "en": "· granted $100,000,000 and 2 medium-range aircraft. Prepare your fleet before choosing routes.",
+    "ja": "・100,000,000ドルと中距離機2機を付与しました。路線選択前に機材を準備してください。"
   },
   "Không ở bước chọn tuyến.": {
     "en": "Not at the route-selection step.",

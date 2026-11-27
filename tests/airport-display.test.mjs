@@ -199,7 +199,7 @@ test('message localization is restricted to verified complete airport fields, no
   const unchanged = [
     han,
     `Player airline: ${han}`,
-    `Đã thành lập ${han} · cấp $500.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.`,
+    `Đã thành lập ${han} · cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.`,
     `Đã thêm sân bay ${han} (ZZQ).`,
     `Note: ${han} · thiếu quyền slot`,
     `${han} · thiếu quyền slot — extra note`,

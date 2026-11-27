@@ -156,10 +156,10 @@ export function transition(current,action){
    if(s.setupComplete||s.day!==1)throw Error('Hãng đã được thiết lập. Chỉ lập hãng mới khi bắt đầu lại.');
    const airline={name:String(action.name||'').trim(),logo:action.logo,color:action.color,origin:action.origin,personalized:true};validateAirline(airline);
    if(!Array.isArray(action.models)||action.models.length!==2||new Set(action.models).size!==2||action.models.some(k=>!STARTING_MODELS.includes(k)))throw Error('Cần hai mẫu máy bay tầm trung khác nhau từ lượt random.');
-   airline.abbreviation=abbreviation(airline.name);s.airline=airline;s.setupComplete=true;s.cash=500000000;s.economyVersion=2;s.gameplay=newGameplay(s.day);s.hq=createHQ();s.hq.hubs={[airline.origin]:{hangar:1}};s.orders=[];s.nextAircraftNumber=101;
+   airline.abbreviation=abbreviation(airline.name);s.airline=airline;s.setupComplete=true;s.cash=100000000;s.economyVersion=2;s.gameplay=newGameplay(s.day);s.hq=createHQ();s.hq.hubs={[airline.origin]:{hangar:1}};s.orders=[];s.nextAircraftNumber=101;
    s.fleet=action.models.map(type=>normalizePlane({id:reserveAircraftId(s),hub:airline.origin,type,wear:0,route:null,freq:1,fare:145,cabin:'dense'},s.day));
    s.hq.staff={pilots:8,cabin:s.fleet.reduce((n,p)=>n+Math.ceil(TYPES[p.type].seats/50),0),tech:4,ground:5};s.tycoon=Engine.create(context(s));s.openedRoutes=[];s.founding={stage:'fleet'};
-   message='Đã thành lập '+airline.name+' · cấp $500.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.';
+   message='Đã thành lập '+airline.name+' · cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.';
   }else if(action.type==='founding-next'){
    if(s.founding?.stage!=='fleet')throw Error('Không ở bước chuẩn bị đội bay.');s.founding.stage='routes';message='Đội bay đã sẵn sàng. Chọn tuyến gợi ý hoặc tự tạo tuyến.';
   }else if(action.type==='founding-back'){
@@ -222,7 +222,7 @@ export function transition(current,action){
   const slotError=slotConflict(context(s),s.tycoon);if(slotError)throw Error(slotError);
   pruneRecoveries(s);if(['add','add-weekly','auto','edit','edit-weekly','optimize'].includes(action.type))validateRecoveries(context(s),s.tycoon,false);
   if(!Number.isFinite(s.cash)||!Number.isFinite(s.hq.prepaidRent)||(report&&['profit','cashDelta','nonfuel'].some(k=>!Number.isFinite(report[k]))))throw Error('Dữ liệu tài chính không hợp lệ. Tải lại phiên trước khi tiếp tục.');
-  if(s.cash!==current.cash)s.hq.ledger.unshift({day:current.day,label:message.slice(0,120),amount:action.type==='setup'?500000000:s.cash-current.cash});s.hq.ledger=s.hq.ledger.slice(0,60);
+  if(s.cash!==current.cash)s.hq.ledger.unshift({day:current.day,label:message.slice(0,120),amount:action.type==='setup'?100000000:s.cash-current.cash});s.hq.ledger=s.hq.ledger.slice(0,60);
   // Rows of the settled day are handed to the caller for the map replay only; they are never stored in the career.
   return {game:s,message,report,...(rows?{rows}:{})};
  }catch(e){return {game:current,error:e.message,...(e.advanceRefund?{advanceRefund:e.advanceRefund}:{})};}

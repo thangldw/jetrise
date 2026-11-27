@@ -52,9 +52,9 @@ test('translation preserves player-provided values and JSX spacing', () => {
   assert.equal(translate('ja', 'Đội bay'), '機材');
   assert.equal(translate('en', ' Đội bay '), ' Fleet ');
   const name = 'Trụ sở <airline> $500 {unknown}';
-  const source = 'Thành lập {name} · nhận $500 triệu';
-  assert.equal(translate('en', source, {name}), `Found ${name} · receive $500 million`);
-  assert.equal(translate('vi', source, {name}), `Thành lập ${name} · nhận $500 triệu`);
+  const source = 'Thành lập {name} · nhận $100 triệu';
+  assert.equal(translate('en', source, {name}), `Found ${name} · receive $100 million`);
+  assert.equal(translate('vi', source, {name}), `Thành lập ${name} · nhận $100 triệu`);
   assert.equal(translate('ja', 'An unknown airline name'), 'An unknown airline name');
   assert.equal(translate('en', 'Hà Nội đến Tokyo'), 'Hà Nội đến Tokyo');
   assert.equal(translate('ja', 'Hà Nội đến Tokyo'), 'Hà Nội đến Tokyo');
@@ -74,7 +74,7 @@ test('system message arguments are localized while aircraft and player names sta
     const source = `Đã lắp Wi-Fi cho ${name}.`;
     assert.ok(translate(language, source).includes(name));
     assert.ok(!translate(language, 'Đã cập nhật đội Phi công.').includes('Phi công'));
-    const founded = `Đã thành lập ${name} · cấp $500.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.`;
+    const founded = `Đã thành lập ${name} · cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.`;
     assert.ok(translate(language, founded).includes(name));
   }
 });

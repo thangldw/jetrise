@@ -12,7 +12,7 @@ test("every scenario founds a valid airline with its own hub and aircraft", () =
     const game = result.game;
     assert.equal(game.airline.origin, scenario.origin);
     assert.deepEqual(game.fleet.map((p) => p.type), scenario.models);
-    assert.equal(game.cash, 500000000, "scenarios never change the starting cash");
+    assert.equal(game.cash, 100000000, "scenarios never change the starting cash");
     assert.deepEqual(restoreGame(JSON.stringify(game)), game);
   }
 });

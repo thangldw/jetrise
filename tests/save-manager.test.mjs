@@ -111,7 +111,7 @@ test('serialized concurrent replacement accepts only the first matching revision
 
 
 test('new-career founding grant and identities occur once after reset and survive export/import',()=>{
- const store=activeStore(),old=store.getItem(SAVE_KEY);restartCareer(store,old);const setup={type:'setup',name:'Aurora Air',origin:'HAN',logo:'planet',color:'#123abc',models:['A320','B738']};const g=savedAction(store,setup);assert.equal(g.cash,500000000);assert.equal(g.economyVersion,2);assert.deepEqual(g.fleet.map(p=>p.id),['AA-101','AA-102']);assert.equal(g.legEconomy,undefined);const target=memoryStorage(),raw=store.getItem(SAVE_KEY);importSaveFile(target,exportSaveFile(store,raw).text,null);assert.deepEqual(restoreGame(target.getItem(SAVE_KEY)),g);assert.throws(()=>savedAction(target,setup));assert.equal(target.getItem(SAVE_KEY),raw);assert(listSaveEntries(store).entries.some(e=>e.reason==='restart'&&e.raw===old));
+ const store=activeStore(),old=store.getItem(SAVE_KEY);restartCareer(store,old);const setup={type:'setup',name:'Aurora Air',origin:'HAN',logo:'planet',color:'#123abc',models:['A320','B738']};const g=savedAction(store,setup);assert.equal(g.cash,100000000);assert.equal(g.economyVersion,2);assert.deepEqual(g.fleet.map(p=>p.id),['AA-101','AA-102']);assert.equal(g.legEconomy,undefined);const target=memoryStorage(),raw=store.getItem(SAVE_KEY);importSaveFile(target,exportSaveFile(store,raw).text,null);assert.deepEqual(restoreGame(target.getItem(SAVE_KEY)),g);assert.throws(()=>savedAction(target,setup));assert.equal(target.getItem(SAVE_KEY),raw);assert(listSaveEntries(store).entries.some(e=>e.reason==='restart'&&e.raw===old));
 });
 
 test('denied storage access rejects manager operations without changing memory',()=>{

@@ -6,7 +6,7 @@ export const messages = {
   'Trụ sở': {en: 'Headquarters', ja: '本部'},
   'Lịch bay': {en: 'Schedule', ja: '運航スケジュール'},
   'Ngân quỹ': {en: 'Treasury', ja: '資金'},
-  'Thành lập {name} · nhận $500 triệu': {en: 'Found {name} · receive $500 million', ja: '{name}を設立 · 5億ドルを受け取る'},
+  'Thành lập {name} · nhận $100 triệu': {en: 'Found {name} · receive $100 million', ja: '{name}を設立 · 1億ドルを受け取る'},
   'Số hiệu dự kiến {first}, {second}. Máy bay được chọn ngẫu nhiên khi lập hãng.': {en: 'Planned registrations: {first}, {second}. Aircraft are randomly selected when you found the airline.', ja: '予定登録番号：{first}、{second}。設立時に機種がランダムに選ばれます。'},
   'Chọn {label}…': {en: 'Select {label}…', ja: '{label}を選択…'},
   'Xóa tìm {label}': {en: 'Clear {label} search', ja: '{label}の検索をクリア'},

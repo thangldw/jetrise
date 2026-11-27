@@ -1359,9 +1359,9 @@ export const messages = {
     "en": "· FIRST HUB",
     "ja": "・最初のハブ"
   },
-  "Đã cấp $500 triệu và 2 máy bay tầm trung ngẫu nhiên. Bạn có thể giữ cấu hình hiện tại hoặc chỉnh cabin, mua tiện nghi và chọn trang trí trước khi tiếp tục.": {
-    "en": "You received $500 million and 2 random medium-range aircraft. Keep the current setup or customize cabins, buy amenities and choose liveries before continuing.",
-    "ja": "開始資金として5億ドルと、ランダムに選ばれた中距離機2機を受け取りました。現在の構成のまま進むことも、客室を調整して設備や塗装を選んでから進むこともできます。"
+  "Đã cấp $100 triệu và 2 máy bay tầm trung ngẫu nhiên. Bạn có thể giữ cấu hình hiện tại hoặc chỉnh cabin, mua tiện nghi và chọn trang trí trước khi tiếp tục.": {
+    "en": "You received $100 million and 2 random medium-range aircraft. Keep the current setup or customize cabins, buy amenities and choose liveries before continuing.",
+    "ja": "開始資金として1億ドルと、ランダムに選ばれた中距離機2機を受け取りました。現在の構成のまま進むことも、客室を調整して設備や塗装を選んでから進むこともできます。"
   },
   "Tầm bay": {
     "en": "Range",
