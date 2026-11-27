@@ -124,3 +124,5 @@ h1,h2,h3{letter-spacing:-.018em}
 .replay-speed button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 .replay-note{margin:0;font-size:11px;color:var(--muted)}
 @media(max-width:760px){.replay-clock strong{font-size:30px}.replay-hud dd{font-size:16px}.replay-map{aspect-ratio:4/3}.replay-speed{order:-1;flex-basis:100%}.replay-speed button{flex:1}.replay-controls .button{flex:1 1 140px;white-space:nowrap}}
+.network-weather{pointer-events:none}
+.network-weather-legend{position:absolute;left:16px;bottom:76px;z-index:2;padding:6px 10px;border-radius:8px;background:rgba(8,20,36,.72);color:#dbe7f3}
