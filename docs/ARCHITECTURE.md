@@ -21,6 +21,7 @@ The whole career is one plain JSON-serialisable object. `src/game.js` owns it:
 
 - `createGame()` builds a new career and `restoreGame(raw)` validates and loads a saved one.
 - `transition(state, action)` is the single way state changes. It returns either a new state or an error message and never partially applies an action.
+- For an `advance` action, `transition` also returns `rows`, the per-flight rows of the day it just settled. They feed the map replay and are never written to the save.
 - `forecast(state)` evaluates a day without changing anything. Forecasts and actual settlement share the same rules, so a preview and its result cannot diverge by construction.
 
 `App.jsx` holds the current state in React, sends every player action through `transition`, and writes the result to storage before updating the screen.
@@ -37,6 +38,7 @@ The whole career is one plain JSON-serialisable object. `src/game.js` owns it:
 | Strategy systems | `strategy.js`, `rival-terms.js`, `rival-network.js`, `gameplay.js`, `opportunities.js`, `positioning.js`, `research.js`, `customer-strategy.js` |
 | Per-leg accounting and connections | `leg-ledger.js`, `leg-settlement.js`, `live-leg-economy.js`, `connection-core.js`, `overnight-connections.js`, `advance-sales.js` |
 | Slots and disruption | `airport-slots.js`, `slot-market.js`, `slot-auction.js`, `disruption-recovery.js`, `recovery.js` |
+| Day replay (presentation only) | `day-replay.js`, `replay-setting.js` |
 | Persistence | `save-store.js` |
 | Language | `language.js`, `locales.js`, `i18n.jsx` |
 
@@ -56,6 +58,7 @@ Saves live in `localStorage` under keys derived from `SAVE_KEY` (`jetrise-career
 | `SAVE_KEY:archive:*` | Careers archived on restart or import |
 | `SAVE_KEY:<system>:<id>` | Backup taken when an optional system was activated, used for rollback. Systems include `slot-auction` and `rival-hubs` |
 | `jetrise.language` | Interface language; independent of the career |
+| `jetrise.replay` | Whether the day replay plays; independent of the career |
 
 `src/save-store.js` is the only module that writes saves. It verifies each write by reading it back, takes a cross-tab lock, and refuses to write if another tab has changed the save since this tab loaded it. A failed write never replaces the current career.
 

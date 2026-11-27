@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Day replay: after a day with flights is run, the map plays the day back with each aircraft flying its settled legs, a running ticket-revenue and passenger count, and pause, 1×/2×/4× and skip controls, then opens the report. It ends on the report's totals, changes no rules and no save data, and is skipped under reduced motion.
+- The replay also shows that day's fog and storms with their demand effect, cancelled flights with their reason, rival aircraft when Competition is on, how full each airborne leg is, and the most profitable and weakest round trip when the day closes. It can be turned off in the settings.
+
 ## 0.2.0
 
 - Weather per airport is complete: legs hit by fog or storms are flagged in Disruption recovery with a suggested delay, and a forecasting research branch extends the weather outlook to 4, 5 and 7 days.

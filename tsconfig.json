@@ -11,5 +11,5 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": []
   },
-  "include": ["src/export-reminder.js", "src/guided-mode.js", "src/scenarios.js"]
+  "include": ["src/export-reminder.js", "src/guided-mode.js", "src/scenarios.js", "src/replay-setting.js"]
 }

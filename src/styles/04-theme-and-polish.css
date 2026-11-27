@@ -70,3 +70,59 @@ h1,h2,h3{letter-spacing:-.018em}
 :root[data-theme=dark] .weather-outlook .weather-fog{color:#fcd34d}
 :root[data-theme=dark] .weather-outlook .weather-storm{color:#fca5a5}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) .weather-outlook .weather-fog{color:#fcd34d}:root:not([data-theme=light]) .weather-outlook .weather-storm{color:#fca5a5}}
+/* Day replay on the map. The scene keeps its night palette in both themes, like the Network map. */
+.day-replay{display:grid;gap:14px}
+.replay-hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 28px}
+.replay-clock small{display:block;font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.replay-clock strong{display:block;font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums}
+.replay-hud dl{display:flex;flex-wrap:wrap;gap:10px 26px;margin:0}
+.replay-hud dt{font-size:11px;color:var(--muted)}
+.replay-hud dd{margin:2px 0 0;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.replay-hud .negative dd{color:#c2410c}
+.replay-hud .positive dd{color:var(--green)}
+.replay-map{position:relative;aspect-ratio:2;border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 65% 45%,#10354c 0,#081b32 55%,#061326 100%)}
+.replay-map>svg{display:block;width:100%;height:100%}
+.replay-land path{stroke:#57778a;stroke-width:.4;fill-rule:evenodd;vector-effect:non-scaling-stroke}
+.replay-arc{fill:none;stroke:#71e5f1;stroke-opacity:.35;stroke-width:1.2;stroke-dasharray:3 5}
+.replay-trail{fill:none;stroke:#ffd27b;stroke-width:2.4;stroke-linecap:round}
+.replay-airport circle{fill:#9ee8ef}
+.replay-airport.hub circle{fill:#ffdfa5}
+.replay-airport text{fill:#d7e6f2;font-weight:700;paint-order:stroke;stroke:#061326;stroke-width:.25em}
+.replay-airport.hub text{fill:#ffe0aa}
+.replay-aircraft path{fill:#fff5d8}
+.replay-aircraft text{fill:#fff;font-weight:600;paint-order:stroke;stroke:#061326;stroke-width:.3em}
+.replay-progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:#ffffff1f}
+.replay-progress>i{display:block;height:100%;background:var(--cta)}
+.replay-arc.rival{stroke:#c4b5fd;stroke-opacity:.22}
+.replay-aircraft.rival path{fill:#c4b5fd}
+.replay-aircraft.rival-1 path{fill:#f9a8d4}
+.replay-weather{fill:#b6c6d6;fill-opacity:.16;stroke:#b6c6d6;stroke-opacity:.55;stroke-width:1}
+.replay-weather.storm{fill:#a78bfa;fill-opacity:.2;stroke:#c4b5fd;stroke-opacity:.8;stroke-dasharray:4 3}
+.replay-popup{fill:#ffe0aa;font-weight:700;paint-order:stroke;stroke:#061326;stroke-width:.3em;font-variant-numeric:tabular-nums}
+.replay-legend,.replay-cancelled{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted)}
+.replay-legend li,.replay-cancelled li{display:flex;align-items:center;gap:6px}
+.replay-cancelled li{flex-wrap:wrap}
+.replay-legend li>svg:not([class]){width:16px;height:14px}
+.replay-legend .rival-0 path{fill:#8b5cf6}
+.replay-legend .rival-1 path{fill:#ec4899}
+.replay-cancelled li{color:#c2410c}
+.replay-cancelled b{font-weight:700}
+.replay-cancelled em{font-style:normal;color:var(--muted)}
+.replay-highlights{display:flex;flex-wrap:wrap;gap:10px;min-height:36px}
+.replay-highlights>div{flex:1 1 220px;display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px}
+.replay-highlights>div.negative{border-left-color:#c2410c}
+.replay-highlights small{font-size:11px;color:var(--muted)}
+.replay-highlights b{font-size:13px}
+.replay-highlights span{font-size:12px;font-variant-numeric:tabular-nums}
+.replay-airborne{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
+.replay-airborne li{display:flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);border-radius:10px;font-size:12px}
+.replay-airborne li span{color:var(--muted);font-variant-numeric:tabular-nums}
+.replay-airborne li.idle{border-style:dashed;color:var(--muted)}
+.replay-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.replay-speed{display:flex;gap:4px}
+.replay-speed button{min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-weight:600}
+.replay-speed button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.replay-note{margin:0;font-size:11px;color:var(--muted)}
+@media(max-width:760px){.replay-clock strong{font-size:30px}.replay-hud dd{font-size:16px}.replay-map{aspect-ratio:4/3}.replay-speed{order:-1;flex-basis:100%}.replay-speed button{flex:1}.replay-controls .button{flex:1 1 140px;white-space:nowrap}}
+.network-weather{pointer-events:none}
+.network-weather-legend{position:absolute;left:16px;bottom:76px;z-index:2;padding:6px 10px;border-radius:8px;background:rgba(8,20,36,.72);color:#dbe7f3}
