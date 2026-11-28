@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
+- Automatic scheduling can rebuild the whole weekly schedule (new default) or keep the current one and only add flights. Rebuild keeps flights holding connecting tickets, flights with one-off adjustments and aircraft that cannot be rescheduled, and applies only if projected profit improves.
+- After a deploy, the game loads the new version on the next visit instead of serving the cached page.
 - Starting cash for a new airline is $100 million (was $500 million). Existing careers are unchanged. At the new economy's prices that buys about one new narrowbody, so early growth leans on leasing and route choice.
 
 - Six new aircraft models: A220-100, E195-E2, 737-900ER, 767-300ER, A330-200 and 777-200ER.
