@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0
+
+- Fleet cards show a side view of each aircraft in its livery colour, sized by class: regional, narrowbody, widebody or double-deck.
+
 ## 0.8.0
 
 - Airline standing on the Headquarters overview: airline value (cash + resale value of owned aircraft − loans) moves the airline up five tiers, from start-up to global carrier (3×, 6×, 12× and 24× the starting capital), with progress to the next tier.
