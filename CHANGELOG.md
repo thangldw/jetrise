@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0
+
+- Airline standing on the Headquarters overview: airline value (cash + resale value of owned aircraft − loans) moves the airline up five tiers, from start-up to global carrier (3×, 6×, 12× and 24× the starting capital), with progress to the next tier.
+
 ## 0.7.0
 
 - Economic cycle for new careers: four-week phases (stable, boom +12% demand, slowdown −8%, recession −18%, with fuel moving the same way) chosen deterministically from the career start. The first four weeks are always stable and the next phase is announced a week ahead in Strategy › Market. Careers founded earlier are unchanged.

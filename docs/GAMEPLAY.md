@@ -99,6 +99,7 @@ These are switched on explicitly and are off in a new career. Each activation sh
 
 ## Guidance and review tools
 
+- **Airline standing.** Airline value is cash plus the resale value of owned aircraft minus the loan balance. It ranks the airline from start-up to regional, national, continental and global carrier at 3×, 6×, 12× and 24× the starting capital. It is a read-out only and pays no reward.
 - **Campaign.** Six chapters, from the first flight to operating two hubs, with one-time cash rewards totalling $450,000.
 - **Alert center.** One list of maintenance, slot, connection and lease-expiry issues that need attention. It is read-only.
 - **Decision comparison.** Compares up to four alternatives (fare, frequency, lease or route) against the current plan over a simulated week, then applies the chosen one in a single step.
