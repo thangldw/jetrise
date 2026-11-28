@@ -52,15 +52,22 @@ export function allocateContracts(ctx,contracts,route,day,capacity){
  return {pax,revenue,remaining,allocations};
 }
 export function closeContracts(contracts,day){let bonus=0,penalty=0;const results=[];for(const c of contracts){if(c.status!=='active'||day<c.end)continue;const won=c.delivered>=Math.ceil(c.target*.9);c.status=won?'won':'lost';bonus+=won?c.bonus:0;penalty+=won?0:c.penalty;results.push({id:c.id,route:c.route,delivered:c.delivered,target:c.target,status:c.status,amount:won?c.bonus:-c.penalty});}return {bonus,penalty,results};}
+// Events depend only on the start day and the week, so the frozen list is shared between calls.
+const eventCache=new Map();
 export function marketEvents(ctx){
  if(!ctx.gameplay)return [];
- const start=ctx.gameplay.startDay,week=Math.max(0,Math.floor((ctx.day-start)/7)),events=[];
+ const start=ctx.gameplay.startDay,week=Math.max(0,Math.floor((ctx.day-start)/7)),cacheKey=start+':'+week;
+ if(!eventCache.has(cacheKey)){if(eventCache.size>512)eventCache.clear();eventCache.set(cacheKey,Object.freeze(buildEvents(start,week).map(e=>Object.freeze(e))));}
+ return [...eventCache.get(cacheKey)];
+}
+function buildEvents(start,week){
+ const events=[];
  for(let w=Math.max(0,week-1);w<=week+1;w++){
   const kind=w%7===6?3:w%3,anchor=start+w*7;events.push({id:`event-${w}`,kind:['tourism','fuel','low','storm'][kind],title:['Tuần lễ du lịch','Biến động nhiên liệu','Mùa thấp điểm','Bão mùa làm gián đoạn khai thác'][kind],start:anchor+3,end:anchor+6,low:[1.15,1.12,.65,.5][kind],high:[1.45,1.32,.85,.75][kind],factor:[1.2+(w%4)*.05,1.16+(w%4)*.04,.68+(w%4)*.04,.55+(w%4)*.05][kind]});
  }return events;
 }
 export function eventFactor(ctx,day,kind,{forecast=false}={}){
- return marketEvents({...ctx,day}).filter(e=>e.kind===kind&&day>=e.start&&day<=e.end).reduce((n,e)=>n*(forecast&&day>ctx.day&&!ctx.gameplay.research.includes(e.id)?(e.low+e.high)/2:e.factor),1);
+ return marketEvents({gameplay:ctx.gameplay,day}).filter(e=>e.kind===kind&&day>=e.start&&day<=e.end).reduce((n,e)=>n*(forecast&&day>ctx.day&&!ctx.gameplay.research.includes(e.id)?(e.low+e.high)/2:e.factor),1);
 }
 export function marketPrices(ctx,day=ctx.day,forecast=false){return {fuelPrice:[740,790,860,725,700,815][(day-1)%6]*eventFactor(ctx,day,'fuel',{forecast}),co2Price:[.1,.12,.085,.11,.095,.13][(day-1)%6]};}
 // Weather per airport and day. It is derived from a hash of (airport, day), so nothing is stored in the save.

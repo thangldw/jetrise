@@ -23,7 +23,8 @@ import {abbreviation,aircraftNumber,reserveAircraftId} from './registration.js';
 import {airportList,getAirport,routeQuote,restoreNetwork,DEFAULT_AIRLINE,validateAirline,validateAirport} from './network.js';
 import Engine from './engine.js';
 import {proposeSchedule,applyProposal} from './planner.js';
-import {repairCost,createHQ,restoreHQ,dailyHQ,modifiers,hqAction} from './hq.js';
+import {repairCost,createHQ,restoreHQ,dailyHQ,modifiers,hqAction,fleetCapacity,MAX_FLEET} from './hq.js';
+export {fleetCapacity};
 import {normalizePlane,fleetAction,settleFleet,usedPrice,deliveryDays,flightUnavailable} from './fleet.js';
 
 export const SAVE_KEY='jetrise-career-v1';
@@ -91,8 +92,8 @@ export function createGame(){
 }
 export function restoreGame(raw){
  const s=JSON.parse(raw);if(!s||typeof s!=='object')throw Error('Invalid save');if(s.economyVersion!==undefined&&![1,2].includes(s.economyVersion))throw Error('Invalid economy');s.economyVersion??=1;restoreNetwork(s,ROUTES);const routes=routesFor(s);s.airline??={...DEFAULT_AIRLINE};s.setupComplete??=true;validateAirline(s.airline);if(s.airline.abbreviation&&s.airline.abbreviation!==abbreviation(s.airline.name))throw Error('Invalid airline abbreviation');if(typeof s.setupComplete!=='boolean')throw Error('Invalid setup');const finite=(n,min,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max;
- if(s.schema!==1||!Number.isInteger(s.day)||!finite(s.day,1,9999)||!finite(s.cash,-1e9,1e10)||!finite(s.fuel,0,10000)||!finite(s.average,1,10000)||!finite(s.co2,0,1e10)||!finite(s.co2Average,0,100)||!Array.isArray(s.fleet)||s.fleet.length<1||s.fleet.length>8||!Array.isArray(s.openedRoutes)||s.openedRoutes.some(i=>!Number.isInteger(i)||!routes[i]))throw Error('Invalid save');
- s.orders??=[];if(!Array.isArray(s.orders)||s.orders.length+s.fleet.length>8||s.orders.some(o=>!o||!Object.hasOwn(TYPES,o.model)||!Number.isInteger(o.deliverDay)||o.deliverDay<=s.day||o.deliverDay>s.day+4))throw Error('Invalid orders');
+ if(s.schema!==1||!Number.isInteger(s.day)||!finite(s.day,1,9999)||!finite(s.cash,-1e9,1e10)||!finite(s.fuel,0,10000)||!finite(s.average,1,10000)||!finite(s.co2,0,1e10)||!finite(s.co2Average,0,100)||!Array.isArray(s.fleet)||s.fleet.length<1||s.fleet.length>MAX_FLEET||!Array.isArray(s.openedRoutes)||s.openedRoutes.some(i=>!Number.isInteger(i)||!routes[i]))throw Error('Invalid save');
+ s.orders??=[];if(!Array.isArray(s.orders)||s.orders.length+s.fleet.length>MAX_FLEET||s.orders.some(o=>!o||!Object.hasOwn(TYPES,o.model)||!Number.isInteger(o.deliverDay)||o.deliverDay<=s.day||o.deliverDay>s.day+4))throw Error('Invalid orders');
  s.hq=restoreHQ(s.hq,s.day,s);if(!s.hq.hubs[s.airline.origin])throw Error('Invalid airline origin');if(s.orders.some(o=>o.hub&&!s.hq.hubs[o.hub]))throw Error('Invalid delivery hub');if(s.network.routes.some((_,i)=>routes[ROUTES.length+i].km>Math.max(...Object.values(TYPES).map(t=>t.range))))throw Error('Invalid route range');
  const missingAirborne=new Set(s.fleet.filter(p=>p.airborneUntilAt===undefined).map(p=>p.id)),ids=new Set();for(const p of s.fleet){if(!(/^[A-Z]{1,5}-\d{3,7}$/.test(p.id)||/^VN-A\d{3,5}$/.test(p.id))||ids.has(p.id)||!Object.hasOwn(TYPES,p.type)||!finite(p.wear,0,100))throw Error('Invalid fleet');ids.add(p.id);normalizePlane(p,s.day);if(!s.hq.hubs[p.hub])throw Error('Invalid aircraft hub');}
  s.nextAircraftNumber??=Math.max(100,...s.fleet.map(p=>aircraftNumber(p.id)),...s.orders.map(o=>aircraftNumber(o.id||'')))+1;
@@ -201,7 +202,7 @@ export function transition(current,action){
   }else if(action.type==='prices'){
    if(!s.openedRoutes.includes(action.route)||!Array.isArray(action.values)||action.values.length!==3||action.values.some(n=>!Number.isInteger(n)||n<20||n>10000))throw Error('Giá vé phải là số nguyên từ $20 đến $10.000.');if(s.tycoon.priceDays[action.route]===s.day)throw Error('Tuyến đã đổi giá hôm nay. Chờ sang ngày tiếp theo.');if(s.cash<5000)throw Error('Cần $5.000 để áp dụng bảng giá.');s.cash-=5000;s.tycoon.prices[action.route]=action.values;s.tycoon.priceDays[action.route]=s.day;message='Đã áp dụng giá vé cho cả ba hạng ghế.';
   }else if(['buy','buy-used','lease'].includes(action.type)){
-   if(!Object.hasOwn(TYPES,action.model))throw Error('Mẫu máy bay không tồn tại.');const t=c.types[action.model];if(s.fleet.length+s.orders.length>=8)throw Error('Đội bay và đơn đặt đã đạt giới hạn 8 chiếc.');
+   if(!Object.hasOwn(TYPES,action.model))throw Error('Mẫu máy bay không tồn tại.');const t=c.types[action.model];if(s.fleet.length+s.orders.length>=fleetCapacity(s))throw Error('Đội bay và đơn đặt đã đủ '+fleetCapacity(s)+' chiếc. Mở thêm hub hoặc nâng hangar để tăng giới hạn.');
    if(action.type==='buy'){if(s.cash<t.price)throw Error('Ngân quỹ chưa đủ.');s.cash-=t.price;s.orders.push({id:reserveAircraftId(s),model:action.model,deliverDay:s.day+deliveryDays(t),hub:s.airline.origin});message='Đã đặt '+t.name+'. Giao đầu ngày '+(s.day+deliveryDays(t))+'.';}
    else {
     const ages=[5,12,20],wears=[20,45,70],tier=action.tier??0;if(action.type==='buy-used'&&(!Number.isInteger(tier)||!ages[tier]))throw Error('Chọn mức tuổi hợp lệ.');

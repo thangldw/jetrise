@@ -26,6 +26,9 @@ export function restoreHQ(value,day,game){
  for(const row of h.ledger)if(!row||!int(row.day,1,day)||typeof row.label!=='string'||row.label.length>120||!Number.isFinite(row.amount)||Math.abs(row.amount)>1e10)throw Error('Invalid ledger');
  return h;
 }
+// Fleet ceiling grows with the network: 8 at the home hub, +4 per extra hub, +2 per hangar level, at most 24 (incl. orders).
+export const MAX_FLEET=24;
+export const fleetCapacity=s=>Math.min(MAX_FLEET,8+4*(Object.keys(s.hq?.hubs||{}).length-1)+2*Object.values(s.hq?.hubs||{}).reduce((n,h)=>n+(h.hangar||0),0));
 export function staffing(s,types){const required={pilots:s.fleet.length*4,cabin:s.fleet.reduce((n,p)=>n+Math.ceil(types[p.type].seats/50),0),tech:s.fleet.length*2,ground:Object.keys(s.hq.hubs).length*4+Math.ceil(s.fleet.length/2)};return Object.fromEntries(Object.entries(TEAMS).map(([k,t])=>[k,{...t,required:required[k],employed:s.hq.staff[k],shortage:Math.max(0,required[k]-s.hq.staff[k])}]));}
 export function dailyHQ(s,types){const teams=staffing(s,types),salary=Object.entries(teams).reduce((n,[k,t])=>n+s.hq.staff[k]*t.salary,0),agency=Object.values(teams).reduce((n,t)=>n+t.shortage*t.salary*1.7,0),hubFees=Object.keys(s.hq.hubs).reduce((n,k)=>n+hubInfo(s,k).daily+s.hq.hubs[k].hangar*500,0),{interest,principal}=loanPayment(s.hq.loan),leaseCost=s.fleet.reduce((n,p)=>n+(p.lease&&p.lease.paidDay!==s.day?p.lease.rate:0),0);return {positioningFee:positioningDaily(s),slotFee:slotDaily(s),fleetSupportFee:fleetSupportFee(s),leaseCost,leaseExpense:leaseCost+(s.hq.prepaidRent??0),prepaidRent:(s.hq.prepaidRent??0),salary:Math.round(salary),agency:Math.round(agency),hubFees,interest,principal,overhead:positioningDaily(s)+slotDaily(s)+fleetSupportFee(s)+Math.round(salary+agency)+hubFees+interest+leaseCost+(s.hq.prepaidRent??0)};}
 export function repairCost(s,plane){const p=s.fleet.find(p=>p.id===plane);return Math.round(60000*(1-.2*(s.hq.hubs[p?.hub||'HAN']?.hangar||0)));}
