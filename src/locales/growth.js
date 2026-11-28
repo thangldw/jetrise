@@ -27,4 +27,5 @@ export const messages = {
   'Tiến độ lên {0}': {en: 'Progress to {0}', ja: '{0}への進捗'},
   'Cần giá trị {0} để lên {1}': {en: 'Reach a value of {0} to become a {1}', ja: '企業価値{0}で{1}に昇格'},
   'Đã đạt bậc cao nhất.': {en: 'Top tier reached.', ja: '最高ランクに到達しました。'},
+  'Nhu cầu phi công theo giờ bay: ngày bận nhất trong lịch tuần có {0} giờ khối → cần {1} phi công (2 người mỗi chuyến, tối đa {2} giờ/người/ngày, dự phòng 10%). Thiếu người thì thuê ngoài với giá ×1,7.': {en: 'Pilot demand follows flying hours: the busiest weekday has {0} block hours → {1} pilots needed (2 per flight, at most {2} hours each per day, 10% reserve). Shortfalls are covered by agency crews at ×1.7.', ja: 'パイロット需要は飛行時間に連動：最も忙しい曜日のブロック時間{0}時間 → 必要パイロット{1}名（1便2名、1人1日最大{2}時間、予備10%）。不足分は1.7倍の外部委託で補います。'},
 };

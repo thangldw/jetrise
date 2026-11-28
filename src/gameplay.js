@@ -15,7 +15,7 @@ export function restoreGameplay(s,routes){
  // Careers saved before the gameplay layer existed keep the flat economy.
  if(s.gameplay===undefined)s.gameplay=newGameplay(s.day);
  const g=s.gameplay,fail=()=>{throw Error('Invalid gameplay progress');};
- if(!g||g.version!==1||!int(g.startDay,1,s.day)||(g.cycle!==undefined&&g.cycle!==true))fail();
+ if(!g||g.version!==1||!int(g.startDay,1,s.day)||(g.cycle!==undefined&&g.cycle!==true)||(g.crew!==undefined&&g.crew!==true))fail();
  for(const k of ['contracts','dismissed','research','claimed','decisions'])if(!Array.isArray(g[k])||g[k].length>(k==='contracts'?24:k==='decisions'?40:10000))fail();
  for(const k of ['dismissed','research','claimed'])if(g[k].some(x=>typeof x!=='string'||x.length>60)||new Set(g[k]).size!==g[k].length)fail();
  if(g.research.some(id=>!/^event-\d{1,4}$/.test(id))||g.dismissed.some(id=>!/^contract-\d{1,4}-\d{1,3}$/.test(id)))fail();
