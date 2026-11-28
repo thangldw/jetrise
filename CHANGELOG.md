@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- Economic cycle for new careers: four-week phases (stable, boom +12% demand, slowdown −8%, recession −18%, with fuel moving the same way) chosen deterministically from the career start. The first four weeks are always stable and the next phase is announced a week ahead in Strategy › Market. Careers founded earlier are unchanged.
+
 ## 0.6.0
 
 - Headquarters overview shows the last 28 settled days as a chart: daily profit bars (gains and losses) over the revenue line, with total profit and current cash.
