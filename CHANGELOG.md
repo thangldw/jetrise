@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+- Headquarters overview shows the last 28 settled days as a chart: daily profit bars (gains and losses) over the revenue line, with total profit and current cash.
+
 ## 0.5.0
 
 - The fleet ceiling grows with the network: 8 aircraft at the home hub, +4 for each additional hub and +2 for each hangar level, up to 24 including orders.

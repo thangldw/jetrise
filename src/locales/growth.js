@@ -2,4 +2,11 @@
 export const messages = {
   'Đội bay và đơn đặt đã đủ {0} chiếc. Mở thêm hub hoặc nâng hangar để tăng giới hạn.': {en: 'Fleet and orders have reached {0} aircraft. Open another hub or upgrade a hangar to raise the limit.', ja: '機材と発注が{0}機に達しました。ハブを増やすか格納庫を拡張すると上限が上がります。'},
   '{0} đơn chờ giao · tối đa {1} máy bay gồm đơn đang chờ (thêm hub hoặc nâng hangar để tăng)': {en: '{0} pending deliveries · up to {1} aircraft including orders (more hubs or hangar upgrades raise this)', ja: '納入待ち{0}件 · 発注を含め最大{1}機（ハブ追加や格納庫拡張で増加）'},
+  'Kết quả {0} ngày gần nhất': {en: 'Last {0} days', ja: '直近{0}日の実績'},
+  'Lợi nhuận mỗi ngày (cột) và doanh thu (đường), từ kết quả đã chốt.': {en: 'Daily profit (bars) and revenue (line) from settled results.', ja: '確定済みの実績による日次利益（棒）と売上（線）。'},
+  'Tổng lợi nhuận': {en: 'Total profit', ja: '利益合計'},
+  'Tiền mặt': {en: 'Cash', ja: '現金'},
+  'Biểu đồ lợi nhuận và doanh thu theo ngày': {en: 'Chart of daily profit and revenue', ja: '日次の利益と売上のグラフ'},
+  'Ngày {0}: lợi nhuận {1} · doanh thu {2}': {en: 'Day {0}: profit {1} · revenue {2}', ja: '{0}日目：利益{1}・売上{2}'},
+  'Ngày {0}': {en: 'Day {0}', ja: '{0}日目'},
 };
