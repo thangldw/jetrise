@@ -113,3 +113,10 @@ test('legacy unnamed faults remain explicitly undiagnosed and named faults survi
  s.fleet[0].fault='Rò rỉ hệ thống thủy lực · cần sửa chữa đột xuất';
  assert.equal(restoreGame(JSON.stringify(s)).fleet[0].fault,s.fleet[0].fault);
 });
+test('rebuild planner replaces the whole weekly schedule and applies only on a profit gain',()=>{
+ const s=rich(),raw=JSON.stringify(s),p=proposeSchedule(context(s),s.tycoon,{rebuild:true});assert.equal(JSON.stringify(s),raw);assert(p.rebuild);assert.equal(p.removed,s.tycoon.schedules.length);
+ const r=transition(s,{type:'optimize',proposal:p});
+ if(p.added&&p.after>p.before){assert(!r.error,r.error);const ids=new Set(s.tycoon.schedules.map(x=>x.id));assert(r.game.tycoon.schedules.every(x=>!ids.has(x.id)));assert.equal(r.game.tycoon.schedules.length,p.added);assert.deepEqual(restoreGame(JSON.stringify(r.game)),r.game);}
+ else{assert(r.error);assert.strictEqual(r.game,s);}
+ const tampered=structuredClone(p);tampered.state.schedules.push({...tampered.state.schedules.at(-1),id:tampered.state.nextId});assert(transition(s,{type:'optimize',proposal:tampered}).error);
+});
