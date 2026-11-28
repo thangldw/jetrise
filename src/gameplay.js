@@ -12,9 +12,10 @@ export const CAMPAIGN = [
 export function newGameplay(day){return {version:1,startDay:day,contracts:[],dismissed:[],research:[],claimed:[],stats:{days:0,operatingDays:0,flights:0,pax:0,profit:0,profitableRoutes:[],hubs:[],contracts:0,recovered:0},decisions:[]};}
 const int=(v,min,max)=>Number.isInteger(v)&&v>=min&&v<=max;
 export function restoreGameplay(s,routes){
+ // Careers saved before the gameplay layer existed keep the flat economy.
  if(s.gameplay===undefined)s.gameplay=newGameplay(s.day);
  const g=s.gameplay,fail=()=>{throw Error('Invalid gameplay progress');};
- if(!g||g.version!==1||!int(g.startDay,1,s.day))fail();
+ if(!g||g.version!==1||!int(g.startDay,1,s.day)||(g.cycle!==undefined&&g.cycle!==true))fail();
  for(const k of ['contracts','dismissed','research','claimed','decisions'])if(!Array.isArray(g[k])||g[k].length>(k==='contracts'?24:k==='decisions'?40:10000))fail();
  for(const k of ['dismissed','research','claimed'])if(g[k].some(x=>typeof x!=='string'||x.length>60)||new Set(g[k]).size!==g[k].length)fail();
  if(g.research.some(id=>!/^event-\d{1,4}$/.test(id))||g.dismissed.some(id=>!/^contract-\d{1,4}-\d{1,3}$/.test(id)))fail();
@@ -69,7 +70,18 @@ function buildEvents(start,week){
 export function eventFactor(ctx,day,kind,{forecast=false}={}){
  return marketEvents({gameplay:ctx.gameplay,day}).filter(e=>e.kind===kind&&day>=e.start&&day<=e.end).reduce((n,e)=>n*(forecast&&day>ctx.day&&!ctx.gameplay.research.includes(e.id)?(e.low+e.high)/2:e.factor),1);
 }
-export function marketPrices(ctx,day=ctx.day,forecast=false){return {fuelPrice:[740,790,860,725,700,815][(day-1)%6]*eventFactor(ctx,day,'fuel',{forecast}),co2Price:[.1,.12,.085,.11,.095,.13][(day-1)%6]};}
+// Economic cycle (careers founded from 0.7.0): four-week phases picked deterministically from the career start
+// (the first four weeks are always stable),
+// so forecasts and settlement agree and nothing extra is stored. Older careers keep the flat economy.
+export const ECONOMY_PHASES={boom:{name:'Bùng nổ',demand:1.12,fuel:1.08},stable:{name:'Ổn định',demand:1,fuel:1},slowdown:{name:'Chững lại',demand:.92,fuel:.95},recession:{name:'Suy thoái',demand:.82,fuel:.88}};
+const PHASE_ORDER=['stable','boom','stable','slowdown','recession','slowdown'];
+export const PHASE_DAYS=28;
+export function economyPhase(ctx,day){
+ const g=ctx.gameplay;if(!g?.cycle)return {id:'stable',...ECONOMY_PHASES.stable,start:null,end:null};
+ const period=Math.max(0,Math.floor((day-g.startDay)/PHASE_DAYS)),offset=Math.floor(hash('cycle:'+g.startDay)*PHASE_ORDER.length),id=period===0?'stable':PHASE_ORDER[(period+offset)%PHASE_ORDER.length],start=g.startDay+period*PHASE_DAYS;
+ return {id,...ECONOMY_PHASES[id],start,end:start+PHASE_DAYS-1};
+}
+export function marketPrices(ctx,day=ctx.day,forecast=false){return {fuelPrice:[740,790,860,725,700,815][(day-1)%6]*eventFactor(ctx,day,'fuel',{forecast})*economyPhase(ctx,day).fuel,co2Price:[.1,.12,.085,.11,.095,.13][(day-1)%6]};}
 // Weather per airport and day. It is derived from a hash of (airport, day), so nothing is stored in the save.
 // Forecasts and settlement share this rule, so a projection always matches the day it predicts; the interface
 // only shows the next WEATHER_OUTLOOK_DAYS days so the player plans around it without a full calendar.
@@ -82,7 +94,7 @@ export function weatherFactor(ctx,from,to,day){
  if(!ctx.gameplay)return 1;
  return WEATHER_EFFECT[weatherKind(from,day)]*WEATHER_EFFECT[weatherKind(to,day)];
 }
-export function demandEventFactor(ctx,day){return eventFactor(ctx,day,'tourism',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'low',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'storm',{forecast:!!ctx.projecting});}
+export function demandEventFactor(ctx,day){return economyPhase(ctx,day).demand*eventFactor(ctx,day,'tourism',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'low',{forecast:!!ctx.projecting})*eventFactor(ctx,day,'storm',{forecast:!!ctx.projecting});}
 export function campaignStatus(s){const g=s.gameplay;if(!g)return [];return CAMPAIGN.map((c,i)=>{let value=c.metric==='flights'?(g.stats.pax>0?1:0):c.metric==='profitableRoutes'?g.stats.profitableRoutes.length:c.metric==='hubs'?g.stats.hubs.filter(h=>s.hq.hubs[h]).length:g.stats[c.metric];const eligible=value>=c.target&&(c.id!=='resilience'||g.stats.profit>0);return {...c,value,claimed:g.claimed.includes(c.id),locked:i>g.claimed.length,ready:i===g.claimed.length&&eligible};});}
 export function settleGameplay(s,report,ctx){const g=s.gameplay;g.contracts=report.contractState;g.stats.days++;if(report.flights)g.stats.operatingDays++;g.stats.flights+=report.flights;g.stats.pax+=report.pax;g.stats.profit+=report.profit;g.stats.contracts+=report.contractResults.filter(c=>c.status==='won').length;const profits={};for(const r of report.rows){profits[r.route]=(profits[r.route]||0)+r.profit;if(r.pax&&!g.stats.hubs.includes(ctx.routes[r.route].from))g.stats.hubs.push(ctx.routes[r.route].from);if(r.recovery&&!report.legAccounting)g.stats.recovered++;}for(const [route,profit] of Object.entries(profits))if(profit>0&&!g.stats.profitableRoutes.includes(Number(route)))g.stats.profitableRoutes.push(Number(route));
  report.aircraft=Object.fromEntries(s.fleet.map(p=>{const rows=report.rows.filter(r=>r.plane===p.id);return [p.id,{revenue:rows.reduce((n,r)=>n+r.revenue,0),profit:rows.reduce((n,r)=>n+r.profit,0),pax:rows.reduce((n,r)=>n+r.pax,0)}];}));

@@ -9,4 +9,11 @@ export const messages = {
   'Biểu đồ lợi nhuận và doanh thu theo ngày': {en: 'Chart of daily profit and revenue', ja: '日次の利益と売上のグラフ'},
   'Ngày {0}: lợi nhuận {1} · doanh thu {2}': {en: 'Day {0}: profit {1} · revenue {2}', ja: '{0}日目：利益{1}・売上{2}'},
   'Ngày {0}': {en: 'Day {0}', ja: '{0}日目'},
+  'CHU KỲ KINH TẾ · {0} NGÀY MỖI GIAI ĐOẠN': {en: 'ECONOMIC CYCLE · {0} DAYS PER PHASE', ja: '景気循環 · 1段階{0}日'},
+  'Bùng nổ': {en: 'Boom', ja: '好況'},
+  'Ổn định': {en: 'Stable', ja: '安定'},
+  'Chững lại': {en: 'Slowdown', ja: '減速'},
+  'Suy thoái': {en: 'Recession', ja: '不況'},
+  'Nhu cầu {0} · giá nhiên liệu {1} · còn {2} ngày': {en: 'Demand {0} · fuel price {1} · {2} days left', ja: '需要{0} · 燃料価格{1} · 残り{2}日'},
+  'Giai đoạn tiếp theo: {0} (nhu cầu {1}, nhiên liệu {2})': {en: 'Next phase: {0} (demand {1}, fuel {2})', ja: '次の段階：{0}（需要{1}、燃料{2}）'},
 };

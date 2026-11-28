@@ -157,7 +157,7 @@ export function transition(current,action){
    if(s.setupComplete||s.day!==1)throw Error('Hãng đã được thiết lập. Chỉ lập hãng mới khi bắt đầu lại.');
    const airline={name:String(action.name||'').trim(),logo:action.logo,color:action.color,origin:action.origin,personalized:true};validateAirline(airline);
    if(!Array.isArray(action.models)||action.models.length!==2||new Set(action.models).size!==2||action.models.some(k=>!STARTING_MODELS.includes(k)))throw Error('Cần hai mẫu máy bay tầm trung khác nhau từ lượt random.');
-   airline.abbreviation=abbreviation(airline.name);s.airline=airline;s.setupComplete=true;s.cash=100000000;s.economyVersion=2;s.gameplay=newGameplay(s.day);s.hq=createHQ();s.hq.hubs={[airline.origin]:{hangar:1}};s.orders=[];s.nextAircraftNumber=101;
+   airline.abbreviation=abbreviation(airline.name);s.airline=airline;s.setupComplete=true;s.cash=100000000;s.economyVersion=2;s.gameplay={...newGameplay(s.day),cycle:true};s.hq=createHQ();s.hq.hubs={[airline.origin]:{hangar:1}};s.orders=[];s.nextAircraftNumber=101;
    s.fleet=action.models.map(type=>normalizePlane({id:reserveAircraftId(s),hub:airline.origin,type,wear:0,route:null,freq:1,fare:145,cabin:'dense'},s.day));
    s.hq.staff={pilots:8,cabin:s.fleet.reduce((n,p)=>n+Math.ceil(TYPES[p.type].seats/50),0),tech:4,ground:5};s.tycoon=Engine.create(context(s));s.openedRoutes=[];s.founding={stage:'fleet'};
    message='Đã thành lập '+airline.name+' · cấp $100.000.000 và 2 máy bay tầm trung. Chuẩn bị đội bay trước khi chọn tuyến.';
