@@ -34,6 +34,7 @@ const messageFields = {
   'Lịch tuần / chặng đã cam kết cần {0}, đang có {1}; thiếu {2} quyền tại {3}. Chuyến thiếu quyền có thể bị hủy; mua lại còn phụ thuộc công suất và thời gian chờ.': ['3'],
   'Lịch tuần cần {0} lượt, gói cho phép {1} tại {2}. Kiểm tra gói hoặc đổi lịch.': ['2'],
   'Đã bổ sung {0} vòng khứ hồi vào lịch tuần.{1}': ['1'],
+  'Đã sắp xếp lại lịch tuần: {0} vòng khứ hồi mới, gỡ {1} vòng cũ.{2}': ['2'],
   'Bản dự phòng không hợp lệ: {0}': ['0'],
   'Backup trước {0}': ['0'],
   '{0} (hỏng hoặc không khớp)': ['0'],

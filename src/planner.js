@@ -62,10 +62,10 @@ function prepareMaintenance(ctx,state){
  }
  return {ctx:trial,plans,blocked,ready};
 }
-function greedySchedule(ctx,original,planes,prepared,late=false){
- const state=structuredClone(original),planning=prepared.ctx,date=weekday=>ctx.day+((weekday-(ctx.day-1)%7+7)%7),beforeMaintenanceCost=maintenanceFee(ctx),before=projectedWeekProfit(ctx,state)-beforeMaintenanceCost;let added=0,currentProfit=projectedWeekProfit(planning,state);
+function greedySchedule(ctx,original,start0,planes,prepared,late=false,rebuild=false){
+ const limit=rebuild?480:80,state=structuredClone(start0),planning=prepared.ctx,date=weekday=>ctx.day+((weekday-(ctx.day-1)%7+7)%7),beforeMaintenanceCost=maintenanceFee(ctx),before=projectedWeekProfit(ctx,original)-beforeMaintenanceCost;let added=0,currentProfit=projectedWeekProfit(planning,state);
  for(const plane of planes.filter(p=>prepared.ready.has(p.id))){
-  for(let step=0;step<672&&added<80&&state.schedules.length<480;step++){const start=late?167.75-step*.25:step*.25;
+  for(let step=0;step<672&&added<limit&&state.schedules.length<480;step++){const start=late?167.75-step*.25:step*.25;
    const day=date(Math.floor(start/24));let best=null;
    for(const route of ctx.openedRoutes){
     if(Engine.slotError(planning,state,plane.id,route,start))continue;
@@ -76,24 +76,32 @@ function greedySchedule(ctx,original,planes,prepared,late=false){
    if(best){Engine.add(planning,state,plane.id,best.route,start);currentProfit=best.after;added++;}
   }
  }
- const addedPlanes=new Set(state.schedules.slice(original.schedules.length).map(s=>s.plane)),maintenance=prepared.plans.filter(p=>addedPlanes.has(p.plane)),final=maintenanceContext(ctx,state,maintenance),maintenanceCost=maintenanceFee(final),after=projectedWeekProfit(final,state)-maintenanceCost;
+ const addedPlanes=new Set(state.schedules.slice(start0.schedules.length).map(s=>s.plane)),maintenance=prepared.plans.filter(p=>addedPlanes.has(p.plane)),final=maintenanceContext(ctx,state,maintenance),maintenanceCost=maintenanceFee(final),after=projectedWeekProfit(final,state)-maintenanceCost;
  const checks=final.fleet.filter(p=>addedPlanes.has(p.id)).map(p=>{const w=maintenanceWindows(p,atDay(ctx.day),atDay(ctx.day)+WEEK*2).find(w=>w.kind==='light');return {plane:p.id,start:w.start,end:w.end,existing:!!ctx.fleet.find(x=>x.id===p.id).servicePlan,fee:Math.round(repairCost(final,p.id)*.35)};});
- return {state,added,before,after,beforeMaintenanceCost,maintenanceCost,maintenance,checks,blocked:prepared.blocked};
+ return {state,added,removed:original.schedules.length-start0.schedules.length,before,after,beforeMaintenanceCost,maintenanceCost,maintenance,checks,blocked:prepared.blocked};
 }
 
 export const plannerBasis=(ctx,state)=>JSON.stringify({day:ctx.day,legEconomy:ctx.legEconomy,gameplay:ctx.gameplay,strategy:ctx.strategy,fleetProgram:ctx.fleetProgram,connectionProgram:ctx.connectionProgram,slotRights:ctx.slotRights,slotMarket:ctx.slotMarket,customerStrategy:ctx.customerStrategy,fleet:ctx.fleet,routes:ctx.routes,openedRoutes:ctx.openedRoutes,hq:ctx.hq,fuel:ctx.fuel,co2:ctx.co2,average:ctx.average,co2Average:ctx.co2Average,modifiers:ctx.modifiers,state});
-export function proposeSchedule(ctx,original){
- const prepared=prepareMaintenance(ctx,original),ordered=ctx.fleet.filter(p=>!p.reserve).sort((a,b)=>ctx.types[b.type].seats-ctx.types[a.type].seats||a.id.localeCompare(b.id)),strategies=[['capacity-first',ordered,false],['small-first',[...ordered].reverse(),false],['late-departures',ordered,true]];
- const proposals=strategies.map(([name,planes,late])=>({...greedySchedule(ctx,original,planes,prepared,late),name}));
+// Rebuild keeps only what cannot move safely: flights of planes the planner cannot reschedule,
+// legs holding connecting-ticket seats, and slots with one-off recovery adjustments.
+function rebuildBase(ctx,original){
+ const keepPlanes=new Set(prepareMaintenance(ctx,original).blocked.map(b=>b.plane)),now=(ctx.day-1)*24,keepSlots=new Set((original.exceptions||[]).map(e=>e.slot));
+ for(const j of ctx.legEconomy?.overnight?.journeys||[])for(const l of j.legs)if(l.status==='reserved'&&l.roundStart>=now)keepSlots.add(l.slot);
+ const base=structuredClone(original);base.schedules=base.schedules.filter(x=>keepPlanes.has(x.plane)||keepSlots.has(x.id));
+ return base;
+}
+export function proposeSchedule(ctx,original,{rebuild=false}={}){
+ const start=rebuild?rebuildBase(ctx,original):original,prepared=prepareMaintenance(ctx,start),ordered=ctx.fleet.filter(p=>!p.reserve).sort((a,b)=>ctx.types[b.type].seats-ctx.types[a.type].seats||a.id.localeCompare(b.id)),strategies=[['capacity-first',ordered,false],['small-first',[...ordered].reverse(),false],['late-departures',ordered,true]];
+ const proposals=strategies.map(([name,planes,late])=>({...greedySchedule(ctx,original,start,planes,prepared,late,rebuild),name}));
  proposals.sort((a,b)=>b.after-a.after||a.name.localeCompare(b.name));const best=proposals[0];
- return {...best,basis:plannerBasis(ctx,original),alternatives:proposals.map(p=>({name:p.name,added:p.added,profit:p.after}))};
+ return {...best,rebuild,basis:plannerBasis(ctx,original),alternatives:proposals.map(p=>({name:p.name,added:p.added,profit:p.after}))};
 }
 export function applyProposal(ctx,original,proposal){
  if(!proposal||proposal.basis!==plannerBasis(ctx,original))throw Error('Phương án đã cũ. Tính lại theo tiến độ mới nhất.');
- const planning=maintenanceContext(ctx,original,proposal.maintenance),state=structuredClone(original),existing=new Set(original.schedules.map(s=>s.id)),extra=proposal.state?.schedules?.filter(s=>!existing.has(s.id));
- if(!Array.isArray(extra)||!extra.length||extra.length>80||proposal.state.schedules.length!==original.schedules.length+extra.length||original.schedules.some(s=>!proposal.state.schedules.some(x=>JSON.stringify(x)===JSON.stringify(s))))throw Error('Phương án không hợp lệ.');
+ const base=proposal.rebuild?rebuildBase(ctx,original):original,planning=maintenanceContext(ctx,base,proposal.maintenance),state=structuredClone(base),existing=new Set(base.schedules.map(s=>s.id)),extra=proposal.state?.schedules?.filter(s=>!existing.has(s.id));
+ if(!Array.isArray(extra)||!extra.length||extra.length>(proposal.rebuild?480:80)||proposal.state.schedules.length!==base.schedules.length+extra.length||base.schedules.some(s=>!proposal.state.schedules.some(x=>JSON.stringify(x)===JSON.stringify(s))))throw Error('Phương án không hợp lệ.');
  if(proposal.maintenance.some(p=>!extra.some(s=>s.plane===p.plane)))throw Error('Ca bảo dưỡng không thuộc máy bay được bổ sung chuyến.');
- for(const s of extra){const p=planning.fleet.find(p=>p.id===s.plane);if(!p?.servicePlan||!timelyCheck(planning,p)||planConflict({...planning,tycoon:original},p,p.servicePlan.start,x=>Engine.duration(planning,p.id,x.route)))throw Error('Máy bay chưa có ca bảo dưỡng tuần hợp lệ.');if(s.id!==state.nextId)throw Error('Mã chuyến đề xuất không hợp lệ.');const result=Engine.add(planning,state,s.plane,s.route,s.start);if(result.error)throw Error(result.error);}
+ for(const s of extra){const p=planning.fleet.find(p=>p.id===s.plane);if(!p?.servicePlan||!timelyCheck(planning,p)||planConflict({...planning,tycoon:base},p,p.servicePlan.start,x=>Engine.duration(planning,p.id,x.route)))throw Error('Máy bay chưa có ca bảo dưỡng tuần hợp lệ.');if(s.id!==state.nextId)throw Error('Mã chuyến đề xuất không hợp lệ.');const result=Engine.add(planning,state,s.plane,s.route,s.start);if(result.error)throw Error(result.error);}
  maintenanceContext(ctx,state,proposal.maintenance);
  if(projectedWeekProfit(planning,state)-maintenanceFee(planning)<=projectedWeekProfit(ctx,original)-maintenanceFee(ctx))throw Error('Phương án không tăng lợi nhuận dự kiến.');
  return {state,fleet:planning.fleet};
