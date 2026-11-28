@@ -4,6 +4,7 @@ import {atDay,applyCompletedService,maintenanceWindows} from './maintenance.js';
 import {flightUnavailable,normalizePlane} from './fleet.js';
 import {reserveAircraftId} from './registration.js';
 import {leaseDailyRate} from './economy.js';
+import {fleetCapacity} from './hq.js';
 
 export function recoveryLeaseQuote(ctx,plane){const t=ctx.types[plane.type],rate=Math.round(leaseDailyRate(ctx,t.price)*4),deposit=Math.round(t.price*.01);return {rate,deposit,upfront:rate+deposit,term:3,total:rate*3};}
 // Validate actual dated occurrences, including adjacent-day and Sunday continuations.
@@ -43,7 +44,7 @@ export function recoverFlight(s,ctx,a){
   else {if(!Number.isFinite(a.hour)||a.hour<0||a.hour>=24||a.hour%.25||a.hour<=base.start%24)throw Error('Chọn giờ muộn hơn trong cùng ngày, theo mốc 15 phút.');e.start=a.hour;}
   message='Đã '+(a.mode==='swap'?'đổi sang '+a.plane:'dời giờ khởi hành')+' riêng lượt ngày '+a.day+'. Lịch tuần giữ nguyên.';
  }else if(a.mode==='lease'){
-  if(s.fleet.length+s.orders.length>=8)throw Error('Đội bay và đơn đặt đã đủ 8 chiếc.');
+  if(s.fleet.length+s.orders.length>=fleetCapacity(s))throw Error('Đội bay và đơn đặt đã đủ '+fleetCapacity(s)+' chiếc. Mở thêm hub hoặc nâng hangar để tăng giới hạn.');
   const q=recoveryLeaseQuote(ctx,original);if(s.cash<q.upfront)throw Error('Không đủ tiền cọc và phí lease ngày đầu.');
   const id=reserveAircraftId(s),p=normalizePlane({id,type:original.type,hub:original.hub,wear:0,ageDays:365,lease:{deposit:q.deposit,rate:q.rate,remaining:3,paidDay:s.day,term:3}},s.day);
   s.cash-=q.upfront;s.hq.prepaidRent+=q.rate;s.fleet.push(p);s.tycoon.cabins[id]=[...s.tycoon.cabins[original.id]];e.plane=id;message='Đã thuê '+id+' trong 3 ngày và cứu lượt ngày '+a.day+'. Phí '+q.rate+' USD/ngày, hoàn cọc khi trả máy bay.';

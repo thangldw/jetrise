@@ -66,14 +66,16 @@ function greedySchedule(ctx,original,start0,planes,prepared,late=false,rebuild=f
  const limit=rebuild?480:80,state=structuredClone(start0),planning=prepared.ctx,date=weekday=>ctx.day+((weekday-(ctx.day-1)%7+7)%7),beforeMaintenanceCost=maintenanceFee(ctx),before=projectedWeekProfit(ctx,original)-beforeMaintenanceCost;let added=0,currentProfit=projectedWeekProfit(planning,state);
  for(const plane of planes.filter(p=>prepared.ready.has(p.id))){
   for(let step=0;step<672&&added<limit&&state.schedules.length<480;step++){const start=late?167.75-step*.25:step*.25;
-   const day=date(Math.floor(start/24));let best=null;
+   const day=date(Math.floor(start/24));let best=null,evaluated=false;
    for(const route of ctx.openedRoutes){
     if(Engine.slotError(planning,state,plane.id,route,start))continue;
     const target=ctx.hq?.targets?.[route];if(target){const offered=Engine.capacity(planning,state,route,day),need=Engine.demand(planning,state,route,day);if(target.every((n,i)=>offered[i]>=Math.min(n,need[i])))continue;}
-    const trial={...state,schedules:[...state.schedules,{id:state.nextId,plane:plane.id,route,start}]},after=projectedWeekProfit(planning,trial),gain=after-currentProfit,score=gain/Engine.duration(planning,plane.id,route);
+    evaluated=true;const trial={...state,schedules:[...state.schedules,{id:state.nextId,plane:plane.id,route,start}]},after=projectedWeekProfit(planning,trial),gain=after-currentProfit,score=gain/Engine.duration(planning,plane.id,route);
     if(gain>1&&(!best||score>best.score))best={route,score,after};
    }
    if(best){Engine.add(planning,state,plane.id,best.route,start);currentProfit=best.after;added++;}
+   // A free start with no profitable route rarely turns profitable 15 minutes later; look again an hour on.
+   else if(evaluated)step+=3;
   }
  }
  const addedPlanes=new Set(state.schedules.slice(start0.schedules.length).map(s=>s.plane)),maintenance=prepared.plans.filter(p=>addedPlanes.has(p.plane)),final=maintenanceContext(ctx,state,maintenance),maintenanceCost=maintenanceFee(final),after=projectedWeekProfit(final,state)-maintenanceCost;

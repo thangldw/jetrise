@@ -25,7 +25,7 @@ Thirteen aircraft types, each with its own speed, range, seat capacity, fuel bur
 | Embraer | E190, E195-E2 |
 
 - **Acquisition.** New orders are delivered after two or four days. Used aircraft are available immediately and priced by age and wear. A standard lease runs 14 days with daily rent, a refundable deposit, early return and expiry.
-- **Limits.** The fleet is capped at eight aircraft including pending deliveries. Registrations are unique and persistent.
+- **Limits.** The fleet, including pending deliveries, is capped at 8 aircraft at the home hub, plus 4 for each additional hub and 2 for each hangar level, up to 24. Registrations are unique and persistent.
 - **Cabin.** Economy (Y), Business (J) and First (F) seat counts share the airframe's space with weights 1 / 1.8 / 4.2. The cabin plan shows the exact seats.
 - **Amenities.** Sixteen packages across connectivity, entertainment, comfort and onboard service, each with an upfront cost and a per-passenger cost. A preview shows the seven-day effect before you buy.
 - **Livery.** Eighteen paint schemes with a live preview.

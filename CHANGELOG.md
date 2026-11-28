@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0
+
+- The fleet ceiling grows with the network: 8 aircraft at the home hub, +4 for each additional hub and +2 for each hangar level, up to 24 including orders.
+- The automatic scheduler is about five times faster (market and event lookups are cached, and a free start with no profitable route skips ahead an hour), so it stays usable with larger fleets. Proposals can differ slightly from before.
+
 ## 0.4.0
 
 - Living network map: today's scheduled flights fly along great-circle routes in game time, under a day/night terminator that follows the clock and season, with a clock and airborne count. Reduced motion shows a still noon.
