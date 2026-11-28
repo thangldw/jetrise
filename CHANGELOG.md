@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
+- Living network map: today's scheduled flights fly along great-circle routes in game time, under a day/night terminator that follows the clock and season, with a clock and airborne count. Reduced motion shows a still noon.
 - Ready-made founding scenarios follow where the player is: Vietnam, Japan, Korea, Thailand, Australia/New Zealand, US, UK/Ireland and Europe each get four local hubs, detected from the time zone and browser locale; elsewhere gets global hubs (Singapore, Dubai, London, New York). The default hub follows the first scenario instead of always Hanoi.
 
 ## 0.3.0

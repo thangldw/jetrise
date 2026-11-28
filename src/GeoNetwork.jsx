@@ -1,5 +1,5 @@
 import {useI18n} from './i18n.jsx';
-import React,{useId,useLayoutEffect,useRef,useState} from 'react';
+import React,{useEffect,useId,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import {AirplaneTilt,GlobeHemisphereEast,ListBullets,MapPin} from '@phosphor-icons/react';
 import {WORLD_LAND} from './data/world-land.js';
 import {airportList,getAirport} from './network.js';
@@ -7,6 +7,17 @@ import {frameNetwork} from './map-framing.js';
 import {clusterMapMarkers} from './map-markers.js';
 import {MapRoutePicker} from './MapRoutePicker.jsx';
 import {airportWeather} from './day-replay.js';
+import {context,Engine,DAYS} from './game.js';
+import {airborneAt,alongPath,greatCircle,scheduledLegs,subsolar,terminator} from './live-map.js';
+
+// One game hour every 2.5 s; the map shows a static noon under reduced motion.
+const HOUR_MS=2500;
+const reducedMotion=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function useGameClock(){
+ const[hour,setHour]=useState(()=>reducedMotion()?12:6);
+ useEffect(()=>{if(reducedMotion())return;let start=null,frame;const base=6,tick=t=>{if(start===null)start=t;setHour((base+(t-start)/HOUR_MS)%24);frame=setTimeout(()=>requestAnimationFrame(tick),100);};frame=setTimeout(()=>requestAnimationFrame(tick),0);return()=>clearTimeout(frame);},[]);
+ return hour;
+}
 
 export function GeoNetwork({game,routes,route,setRoute}){
  const {t:tx,locale,airportLabel}=useI18n();
@@ -18,7 +29,16 @@ export function GeoNetwork({game,routes,route,setRoute}){
  const lights=airportList(game).filter(a=>a.major).map(a=>({...frame.raw(a),iata:a.iata})).filter(p=>p.x>box.x&&p.x<box.x+box.w&&p.y>box.y&&p.y<box.y+box.h).slice(0,320);
  // Today's fog and storms (the engine's deterministic weather) at the hub and the visible destinations.
  const weather=airportWeather([...new Set([origin.iata,...visible.map(({r})=>r.to)])],game.day);
- const arc=to=>{const p=frame.raw(getAirport(game,to));return `M ${rawHub.x} ${rawHub.y} Q ${(rawHub.x+p.x)/2} ${Math.min(rawHub.y,p.y)-box.h*.14} ${p.x} ${p.y}`;};
+ const projectPath=(a,b)=>{const start=frame.raw(a),pts=greatCircle(a,b,40);return pts.map(p=>({x:start.x+(p.lon-pts[0].lon)/360*1000,y:(90-p.lat)/180*500}));};
+ const pathOf=useMemo(()=>{const cache=new Map();return (from,to)=>{const key=from+'>'+to;if(!cache.has(key))cache.set(key,projectPath(getAirport(game,from),getAirport(game,to)));return cache.get(key);};},[game,global,origin.iata,box.x,box.w]);
+ const arc=to=>pathOf(origin.iata,to).map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');
+ // Living layer: today's scheduled legs on the visible routes fly in real game time, under the day/night terminator.
+ const hour=useGameClock(),visibleSet=new Set(visible.map(({i})=>i));
+ const legs=useMemo(()=>{const ctx=context(game);return scheduledLegs(game,routes,(p,ri)=>Engine.duration(ctx,p,ri),ri=>visibleSet.has(ri));},[game,routes,origin.iata,visible.length]);
+ const flying=airborneAt(legs,hour).map(l=>({...l,...alongPath(pathOf(l.from,l.to),l.t)}));
+ const sun=subsolar(game.day,hour,origin.lon),{line,darkPole}=terminator(sun,4),poleY=darkPole>0?0:500;
+ const night=[-1000,0,1000].map(off=>`M ${line[0].lon/360*1000+500+off} ${poleY} `+line.map(p=>`L ${(p.lon/360*1000+500+off).toFixed(1)} ${((90-p.lat)/180*500).toFixed(1)}`).join(' ')+` L ${line.at(-1).lon/360*1000+500+off} ${poleY} Z`).join(' ');
+ const clock=String(Math.floor(hour)).padStart(2,'0')+':'+String(Math.floor(hour%1*60)).padStart(2,'0');
  return <section className="world geo-network night-network" aria-label={tx("Sơ đồ mạng bay toàn cầu")}>
   <div className="network-atmosphere" aria-hidden="true"/>
   <div className="geo-title"><small><span className="network-status-dot"/>{game.airline.name} <span className="network-eyebrow-divider">/</span>{tx(" MẠNG BAY")}</small><p>{tx("{0} · {1} tuyến hiển thị",{0:airportLabel(game,origin.iata),1:tx(visible.length)})}</p><div className="map-view-controls" role="group" aria-label={tx("Phạm vi bản đồ")}><button aria-pressed={!global} onClick={()=>setGlobal(false)}><MapPin size={15}/>{tx(" Mạng hiện tại")}</button><button aria-pressed={global} onClick={()=>setGlobal(true)}><GlobeHemisphereEast size={15}/>{tx(" Toàn cầu")}</button></div></div>
@@ -28,9 +48,11 @@ export function GeoNetwork({game,routes,route,setRoute}){
    <radialGradient id={uid+'light'}><stop stopColor="#f8d59e" stopOpacity=".85"/><stop offset="1" stopColor="#f8d59e" stopOpacity="0"/></radialGradient>
   </defs><g className="geo-land">{[-1000,0,1000].map(offset=><g key={offset} transform={`translate(${offset} 0)`}>{WORLD_LAND.map((d,i)=><path key={i} d={d} style={{fill:`url(#${uid}land)`}}/>)}</g>)}</g>
   <g className="geo-graticule">{Array.from({length:37},(_,i)=><line key={'lon'+i} x1={-1000+i*1000/12} y1="0" x2={-1000+i*1000/12} y2="500"/>)}{Array.from({length:7},(_,i)=><line key={'lat'+i} x1="-1000" y1={i*500/6} x2="2000" y2={i*500/6}/>)}</g>
+  <path className="geo-night" d={night}/>
   <g className="network-city-lights">{lights.map((p,i)=><g key={p.iata}><circle cx={p.x} cy={p.y} r={box.w*.005} fill={`url(#${uid}light)`} opacity=".2"/><circle cx={p.x} cy={p.y} r={box.w*(i%4===0?.00085:.00055)} fill={i%3?'#aacfe0':'#f8cf8f'} opacity={.45+i%4*.12}/></g>)}</g>
-  {visible.map(({r,i})=><g key={r.code} className={i===route?'network-arc active':'network-arc'}><path className="arc-glow" filter={`url(#${uid}glow)`} d={arc(r.to)} vectorEffect="non-scaling-stroke"/><path className="arc-track" d={arc(r.to)} vectorEffect="non-scaling-stroke"/>{i===route&&<g className="map-motion"><animateMotion path={arc(r.to)} dur="12s" repeatCount="indefinite" rotate="auto"/><g transform={`rotate(45) translate(${-box.w*.011},${-box.w*.011})`}><AirplaneTilt size={box.w*.022} weight="fill" fill="#fff5d8" stroke="none"/></g></g>}</g>)}
+  {visible.map(({r,i})=><g key={r.code} className={i===route?'network-arc active':'network-arc'}><path className="arc-glow" filter={`url(#${uid}glow)`} d={arc(r.to)} vectorEffect="non-scaling-stroke"/><path className="arc-track" d={arc(r.to)} vectorEffect="non-scaling-stroke"/>{i===route&&!legs.length&&<g className="map-motion"><animateMotion path={arc(r.to)} dur="12s" repeatCount="indefinite" rotate="auto"/><g transform={`rotate(45) translate(${-box.w*.011},${-box.w*.011})`}><AirplaneTilt size={box.w*.022} weight="fill" fill="#fff5d8" stroke="none"/></g></g>}</g>)}
   <g className="network-weather">{weather.map(w=>{const p=frame.raw(getAirport(game,w.code));return <circle key={w.code} className={'replay-weather '+w.kind} cx={p.x} cy={p.y} r={box.w*.014} vectorEffect="non-scaling-stroke"/>;})}</g>
+  <g className="live-aircraft">{flying.map(f=><g key={f.id} transform={`translate(${f.x.toFixed(2)} ${f.y.toFixed(2)}) rotate(${f.angle.toFixed(1)}) scale(${(box.w*.0021).toFixed(4)})`} className={f.route===route?'active':''}><path d="M6 0 L-4 -1.2 L-5.5 -4.5 L-6.5 -4.5 L-5.5 -0.9 L-6.5 -0.9 L-7.5 -2.2 L-8 -2.2 L-7.4 0 L-8 2.2 L-7.5 2.2 L-6.5 0.9 L-5.5 0.9 L-6.5 4.5 L-5.5 4.5 L-4 1.2 Z"/></g>)}</g>
   <g className="map-exact-endpoints">{[origin,...visible.map(({r})=>getAirport(game,r.to))].map(a=>{const p=frame.raw(a);return <circle key={a.iata} cx={p.x} cy={p.y} r={box.w*.003} fill={a.iata===origin.iata?'#ffdfa5':'#9ee8ef'}/>;})}</g>
   </svg>{markers.map(group=>{
    const targets=group.members.filter(m=>!m.hub),hasHub=group.members.some(m=>m.hub),selected=targets.some(m=>m.index===route),style={left:group.x+'%',top:group.y+'%'};
@@ -38,6 +60,7 @@ export function GeoNetwork({game,routes,route,setRoute}){
    const clustered=group.members.length>1,entry=routes[targets[0].index];
    return <button key={group.key} className={'network-map-marker '+(clustered?'map-cluster ':'')+(selected?'selected':'')} style={style} title={clustered?targets.map(m=>airportLabel(game,routes[m.index].to)).join(' · '):airportLabel(game,entry.to)} aria-label={clustered?tx("Chọn trong cụm {0} tuyến{1}",{0:targets.length,1:hasHub?tx(' gần hub ')+origin.iata:''}):tx("Chọn tuyến {0} đến {1}",{0:airportLabel(game,entry.from),1:airportLabel(game,entry.to)})} aria-pressed={selected} aria-haspopup={clustered?'dialog':undefined} onClick={e=>clustered?openPicker(e,targets.map(m=>m.index)):setRoute(targets[0].index)}>{clustered?<><span className="map-cluster-count">{tx(targets.length)}</span><span>{tx("tuyến")}{hasHub&&<small>{tx("Hub {0}",{0:tx(origin.iata)})}</small>}</span></>:<><span className="map-marker-dot"/><b>{tx(entry.to)}</b></>}</button>;
   })}</div>
+  <div className="live-clock" aria-live="off"><b>{clock}</b><span>{tx(DAYS[(game.day-1)%7])}</span><small>{tx("{0} máy bay đang bay",{0:tx(flying.length)})}</small></div>
   <div className="network-scene-footer"><div className="network-route-readout"><span className="network-route-icon"><AirplaneTilt size={22} weight="fill"/></span><div><small>{tx("TUYẾN ĐANG CHỌN")}</small><b>{tx(origin.iata)}<span>↔</span>{tx(destination.iata)}</b><p>{tx("{0} km · {1}",{0:tx(r.km.toLocaleString(locale)),1:game.openedRoutes.includes(route)?tx("Đã mở khai thác"):tx("Chưa mở tuyến")})}</p></div></div><button ref={pickerButton} className="map-pick-button" aria-haspopup="dialog" onClick={openPicker}><ListBullets size={19}/><span>{tx("Chọn tuyến")}</span><b>{tx(visible.length)}</b></button></div>
   {weather.length>0&&<ul className="replay-legend network-weather-legend">{weather.map(w=><li key={w.code} className={'weather-'+w.kind}>{tx("{0} tại {1} · nhu cầu {2}%",{0:tx(w.kind==='storm'?'Bão':'Sương mù'),1:w.code,2:w.demand})}</li>)}</ul>}
   <p className="geo-caption">{tx("Bản đồ đêm minh họa · {0} · Bấm cụm để chọn từng tuyến",{0:global?tx("Toàn cầu"):tx("Tự căn theo mạng bay")})}</p>
