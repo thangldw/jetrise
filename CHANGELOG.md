@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0
+
+- Crew hours for new careers: pilot demand follows the busiest weekday of the schedule (two pilots per flight, nine block hours each per day, 10% reserve) instead of a flat four per aircraft, so a denser timetable needs more pilots or pays for agency crew. Headquarters › Staff explains the figure. Careers founded earlier are unchanged.
+
 ## 0.9.0
 
 - Fleet cards show a side view of each aircraft in its livery colour, sized by class: regional, narrowbody, widebody or double-deck.
