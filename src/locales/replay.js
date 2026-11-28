@@ -22,4 +22,5 @@ export const messages = {
   'Hủy lúc {0}': {en: 'Cancelled at {0}', ja: '{0}に欠航'},
   'Phát lại ngày trên bản đồ': {en: 'Day replay on the map', ja: '地図での1日リプレイ'},
   'Xem các chuyến bay diễn ra trên bản đồ sau khi chạy ngày. Tắt để mở thẳng báo cáo.': {en: 'Watch the flights play out on the map after running a day. Turn off to open the report directly.', ja: '1日を実行した後、フライトの様子を地図で再生します。オフにするとレポートを直接開きます。'},
+  '{0} máy bay đang bay': {en: '{0} aircraft airborne', ja: '{0}機が飛行中'},
 };
