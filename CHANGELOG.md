@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Ready-made founding scenarios follow where the player is: Vietnam, Japan, Korea, Thailand, Australia/New Zealand, US, UK/Ireland and Europe each get four local hubs, detected from the time zone and browser locale; elsewhere gets global hubs (Singapore, Dubai, London, New York). The default hub follows the first scenario instead of always Hanoi.
+
 ## 0.3.0
 
 - Automatic scheduling can rebuild the whole weekly schedule (new default) or keep the current one and only add flights. Rebuild keeps flights holding connecting tickets, flights with one-off adjustments and aircraft that cannot be rescheduled, and applies only if projected profit improves.
